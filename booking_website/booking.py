@@ -32,14 +32,14 @@ ph = PasswordHasher()
 
 app.secret_key = secrets.token_hex(32)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://sunny:Music321@localhost:5432/users.db'
 app.config['SQLACLEMY_TRACK_MODIFICATION'] = False
 
 app.config['SQLALCHEMY_BINDS'] = {
-    'bookings_db' :'sqlite:///bookings.db',
-    'doctors_db' : 'sqlite:///doctors.db',
-    'availability_db': 'sqlite:///availability.db',
-    'tokens_db': 'sqlite:///tokens.db'
+    'bookings_db' :'postgresql://sunny:Music321@localhost:5432/bookings.db',
+    'doctors_db' : 'postgresql://sunny:Music321@localhost:5432/doctors.db',
+    'availability_db': 'postgresql://sunny:Music321@localhost:5432/availability.db',
+    'tokens_db': 'postgresql://sunny:Music321@localhost:5432/tokens.db'
 
 }
 
