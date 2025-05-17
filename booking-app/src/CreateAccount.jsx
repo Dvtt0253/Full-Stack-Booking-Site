@@ -1,25 +1,79 @@
+
+import React from "react";
+import { useNavigate } from "react-router-dom";
+
+
 function CreateAccount(){
 
-    return(
-        <div className="create-account-form">
-            <form method="POST" action="" >
-                <label for="first_name">First Name:</label>
-                <input type="text" id="first_name" name="first_name" required/>
-                <label for="last_name">Last Name:</label>
-                <input type="text" id="last_name" name="last_name" required/>
-                <label for="email">Email:</label>
-                <input type="text" id="email" name="email" required/>
-                <label for="password">Password:</label>
-                <input type="text" id="password" name="password" required/>
-                <label for="confirm-password">Confirm Password:</label>
-                <input type="password" id="confirm-password" name="confirm-password" required/>
-                <button type="submit">Sign Up</button>
-                
+    const navigate = useNavigate();
 
-            </form>
+    const createAccount = async(formData) => {
+       
+
+
+        try{
+            const response = await fetch("/route/create_account", {
+                method: 'POST',
+                body: formData
+            },
+
+            
+
+
+
+
+            )
+            const data = await response.json();
+            if(data.success){
+                navigate('/verify_message');
+                alert(data.message);
+            }
+            else{
+                navigate('/');
+                alert(data.message);
+            }
+        }catch(error){
+            console.error("Error", error);
+            alert("Response not found");
+
+        }
+
+        
+
+
+
+    }
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        createAccount(formData);
+
+
+    }
+
+    
+
+    return(
+        <div>
+            <h2>Create An Account</h2>
+        <form onSubmit={handleSubmit}>
+            <label htmlFor="first-name">First Name:</label>
+            <input type="text" id="first-name" name="first-name" required/>
+            <label htmlFor="last-name">Last Name:</label>
+            <input type="text" id="last-name" name="last-name" required/>
+            <label htmlFor="email">Email:</label>
+            <input type="email" id="email" name="email" required/>
+            <label htmlFor="password">Password:</label>
+            <input type="password" id="password" name="password" required/>
+            <label htmlFor="confirm-password">Confirm Password:</label>
+            <input type="password" id="confirm-password" name="confirm-password" required/>
+            <button type="submit">Sign Up</button>
+
+        </form>
+           
+
         </div>
     );
-
 
 }
 export default CreateAccount
