@@ -1,18 +1,20 @@
 
 import React from "react";
+import {useState} from "react";
 import { useNavigate } from "react-router-dom";
 
 
 function CreateAccount(){
 
     const navigate = useNavigate();
+   
 
     const createAccount = async(formData) => {
        
 
 
         try{
-            const response = await fetch("/route/create_account", {
+            const response = await fetch("http://127.0.0.1:5011/create_account", {
                 method: 'POST',
                 body: formData
             },
@@ -25,6 +27,8 @@ function CreateAccount(){
             )
             const data = await response.json();
             if(data.success){
+                const user_token = data.token;
+                
                 navigate('/verify_message');
                 alert(data.message);
             }
@@ -51,6 +55,8 @@ function CreateAccount(){
 
     }
 
+ 
+
     
 
     return(
@@ -76,4 +82,6 @@ function CreateAccount(){
     );
 
 }
+
+
 export default CreateAccount

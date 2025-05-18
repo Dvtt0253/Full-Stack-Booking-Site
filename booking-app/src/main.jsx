@@ -4,6 +4,9 @@ import {createBrowserRouter, RouterProvider} from 'react-router-dom'
 import './index.css'
 import CreateAccount from './CreateAccount.jsx';
 import VerifyMessage from './VerifyMessage.jsx';
+import Login from './Login.jsx';
+import UserHomepage from './UserHomepage.jsx';
+import AdminHomepage from './AdminHomepage.jsx';
 import App from './App.jsx'
 
 const router = createBrowserRouter([
@@ -14,6 +17,19 @@ const router = createBrowserRouter([
   {
     path: '/verify_message',
     element: <VerifyMessage/>,
+  },
+  {
+    path: '/login_page',
+    element: <Login/>
+  },
+  {
+    path: '/hompage',
+    element: <UserHomepage/>
+  },
+  {
+    path: '/admin_homepage',
+    element: <AdminHomepage/>
+
   }
 
 ]);

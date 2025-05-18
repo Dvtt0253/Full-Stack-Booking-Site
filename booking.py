@@ -11,6 +11,7 @@ from email.mime.multipart import MIMEMultipart
 import os
 import dotenv
 import string
+from flask_cors import CORS
 
 SMTP_SERVER = 'smtp.gmail.com'
 SMTP_PORT = 587
@@ -27,6 +28,7 @@ dotenv.load_dotenv()
 
 
 app = Flask(__name__)
+CORS(app)
 
 ph = PasswordHasher()
 
@@ -158,6 +160,7 @@ def signup():
 
 @app.route('/create_account', methods=['POST', 'GET'])
 def create_account():
+  
     first_name = request.form['first-name']
     last_name = request.form['last-name']
     email = request.form['email'].lower()
@@ -178,8 +181,11 @@ def create_account():
         db.session.commit()
        
     except IntegrityError:
-        flash('User Already Exists.', category="error")
-        return redirect(url_for('signup'))
+       return jsonify({
+           'success':False,
+           'message': "User Already Exists."
+           
+       }), 400
     added_user = User.query.filter_by(email=email).first()
     print(added_user.email)
     user_id = added_user.id
@@ -192,8 +198,15 @@ def create_account():
     db.session.commit()
     subject = "BlueTree Health Email Verification"
     send_verification_email("verify_email.html", added_user.email, subject, verification_token )
+  
 
-    return redirect(url_for('verify_message'))
+    return jsonify({
+        'success':True,
+        'message':"Account Created Successfully Please verify Your Email Address.",
+        'token' : verification_token
+
+        
+    }), 200
 
 @app.route('/verify_message')
 def verify_message():
@@ -219,30 +232,57 @@ def login_auth():
                 ph.verify(returning_user.hashed_password, password)
             
             except VerifyMismatchError:
-                flash('Incorrect Login Details.', category='error')
-                return redirect(url_for('login_page'))
+                
+                return jsonify({
+                    'success': False,
+                    'message': 'Incorrect Credentials',
+                })
             session['id'] = returning_user.id
             session['first_name'] = returning_user.first_name
             session['last_name'] = returning_user.last_name
             session['email'] = returning_user.email
             session['role'] = returning_user.role
             session['is_deleted'] = returning_user.is_deleted
+
+            doctors = Doctor.query_all()
             
             if session['role'] == "User":
 
-                return redirect(url_for('homepage'))
+                return jsonify({
+                    'Role': session['role'],
+                    'success': True,
+                    'message': "User Login Successful",
+                   
+
+
+
+                    
+                }),200
             else:
-                return redirect(url_for('admin_homepage'))
+                return jsonify({
+                    'Role': session['role'],
+                    'success': True,
+                    'message': "Admin Login Successful"
+
+                }), 200
         else:
-            flash("Please Verify Your Email Address to Login.", category="error")
-            return redirect(url_for("login_page"))
+            
+            return jsonify({
+                'success':False,
+                'message': 'Please Verify Your Email Address'
+
+            })
             
         
 
 
     else:
-        flash("The Entered Credentials doesn't match our records.", category="error")
-        return redirect(url_for("signup"))
+        
+        return jsonify({
+            'success': False,
+            'message': 'Entered Credentials Does Not Match Our Records',
+
+        })
 @app.route('/homepage', methods=['POST', 'GET'])
 def homepage():
    
@@ -766,12 +806,15 @@ def verify_email():
         if verified_user:
             verified_user.is_verified = 1
             db.session.commit()
-            flash("Your Account has been Verified.", category="success")
-            return redirect(url_for("login_page"))
-        flash("User Not Found", category="error")
-        return redirect(url_for("signup"))
-    flash("Token Cannot be Verified", category="error")
-    return redirect(url_for("signup"))
+            
+            return redirect('http://localhost:5173/login_page')
+                
+
+
+        
+        return "User Not Found"
+    return "Token Could Not Be Verified."
+        
 
 
 
