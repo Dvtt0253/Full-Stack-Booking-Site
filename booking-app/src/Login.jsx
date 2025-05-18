@@ -19,7 +19,9 @@ function Login() {
               
             )
             const data = await response.json();
+            console.log(data);
             if(data.success && data.Role === "User"){
+
                 navigate('/homepage');
 
             }
@@ -32,7 +34,7 @@ function Login() {
                 alert(data.message);
             }
         }catch(error){
-            console.log("Response Not found");
+            console.log("Response Not found", error);
             alert("Response Not Found");
         }
 

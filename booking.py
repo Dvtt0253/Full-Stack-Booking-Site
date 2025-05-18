@@ -28,7 +28,7 @@ dotenv.load_dotenv()
 
 
 app = Flask(__name__)
-CORS(app)
+CORS(app,origins=["http://localhost:5173"], supports_credentials=True)
 
 ph = PasswordHasher()
 
@@ -140,7 +140,7 @@ def send_verification_email(html_temp, receiver, subject, token):
             server.login(sender_email, email_password)
             server.sendmail(sender_email, receiver, msg.as_string())
     except Exception as e:
-        print("Error While Sending Email.")
+        print(f"Error While Sending Email.{e}")
 
 
 
@@ -244,27 +244,21 @@ def login_auth():
             session['role'] = returning_user.role
             session['is_deleted'] = returning_user.is_deleted
 
-            doctors = Doctor.query_all()
             
-            if session['role'] == "User":
+            
+           
 
-                return jsonify({
-                    'Role': session['role'],
-                    'success': True,
-                    'message': "User Login Successful",
+            return jsonify({
+                'Role': returning_user.role,
+                'success': True,
+                'message': "User Login Successful",
                    
 
 
 
                     
                 }),200
-            else:
-                return jsonify({
-                    'Role': session['role'],
-                    'success': True,
-                    'message': "Admin Login Successful"
-
-                }), 200
+           
         else:
             
             return jsonify({
@@ -292,8 +286,18 @@ def homepage():
     for date in doctor_dates:
         avail_dates.append(date)
 
+    return jsonify({
+        'success':True,
+        'first_name': session['first_name'],
+        'last_name': session['last_name'],
+        'doctors': doctors
+
+
+    }), 200
+
+
     
-    return render_template('homepage.html', first_name=session['first_name'], last_name=session['last_name'], doctors=doctors )
+    
 
 @app.route('/submit_doctor', methods=['POST', 'GET'])
 def submit_doctor():
