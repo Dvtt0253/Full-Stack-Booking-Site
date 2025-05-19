@@ -56,9 +56,43 @@ function AdminHomepage(){
 
 
     return(
-        <div>
-            Hello Admin
+        <>
+
+        <div className="admin-navbar">
+            <button>Home</button>
+             <button>Users</button>
+              <button>Doctors</button>
+               <button>Appointments</button>
+                <button>Availability</button>
+
         </div>
+            <div className="admin-homepage">
+                <div className="counts">
+                    <h3>Patients</h3>
+                    <p>{userLength}</p>
+
+                </div>
+                <div className="counts">
+                    <h3>Doctors</h3>
+                    <p>{doctorLength}</p>
+
+                </div>
+
+            </div>
+            <div className="admin-users">
+
+            </div>
+            <div className="admin-doctors">
+
+            </div>
+            <div className="admin-appoints">
+
+            </div>
+            <div className="admin-avail">
+
+
+            </div>
+        </>
     );
 
 }
