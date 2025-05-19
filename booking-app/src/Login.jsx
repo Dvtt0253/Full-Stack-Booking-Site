@@ -12,7 +12,8 @@ function Login() {
         try{
             const response = await fetch('http://127.0.0.1:5011/login_auth',{
                 method: 'POST',
-                body: formData
+                body: formData,
+                credentials: 'include',
             },
 
             

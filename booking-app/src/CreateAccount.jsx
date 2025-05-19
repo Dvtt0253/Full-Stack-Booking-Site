@@ -16,7 +16,8 @@ function CreateAccount(){
         try{
             const response = await fetch("http://127.0.0.1:5011/create_account", {
                 method: 'POST',
-                body: formData
+                body: formData,
+                credentials: 'include',
             },
 
             

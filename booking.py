@@ -12,6 +12,9 @@ import os
 import dotenv
 import string
 from flask_cors import CORS
+from flask_session import Session
+
+
 
 SMTP_SERVER = 'smtp.gmail.com'
 SMTP_PORT = 587
@@ -28,14 +31,29 @@ dotenv.load_dotenv()
 
 
 app = Flask(__name__)
+
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SESSION_PERMANENT'] = False  
+app.config['SESSION_USE_SIGNER'] = True
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['SESSION_COOKIE_SAMESITE'] = 'None'  
+app.config['SESSION_COOKIE_SECURE'] = True 
+
+Session(app)
+
+
+
+app.secret_key = os.getenv('SECRET_KEY')
 CORS(app,origins=["http://localhost:5173"], supports_credentials=True)
 
 ph = PasswordHasher()
 
-app.secret_key = secrets.token_hex(32)
+
+
+
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
-app.config['SQLACLEMY_TRACK_MODIFICATION'] = False
+app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
 
 app.config['SQLALCHEMY_BINDS'] = {
     'bookings_db' :'sqlite:///bookings.db',
@@ -243,6 +261,7 @@ def login_auth():
             session['email'] = returning_user.email
             session['role'] = returning_user.role
             session['is_deleted'] = returning_user.is_deleted
+            
 
             
             
@@ -277,8 +296,13 @@ def login_auth():
             'message': 'Entered Credentials Does Not Match Our Records',
 
         })
-@app.route('/homepage', methods=['POST', 'GET'])
+@app.route('/homepage')
 def homepage():
+    try: 
+        print(session)
+    except Exception as e:
+        print(e)
+    
    
     doctors = Doctor.query.all()
     doctor_dates = Availability.query.filter_by(is_booked = 0).all()
@@ -565,26 +589,122 @@ def add_admin():
 
 @app.route('/admin_homepage')
 def admin_homepage():
-    active_users = User.query.filter_by(is_deleted=0).all()
-    deleted_users = User.query.filter_by(is_deleted=1).all()
+    active_users_query = User.query.filter_by(is_deleted=0).all()
+    deleted_users_query = User.query.filter_by(is_deleted=1).all()
+    deleted_users = []
+    for user in deleted_users_query:
+        deleted_users.append({
+            'id': user.id,
+            'first_name': user.first_name,
+            'email': user.email,
+            'role': user.role,
+            'join_date': user.join_date,
+        })
+    active_users = []
     i = 0
-    for user in active_users:
+    for user in active_users_query:
         i += 1 
         user_length = i
-    active_appointments = Booking.query.filter_by(is_cancelled=0).all()
-    cancelled_appointments = Booking.query.filter_by(is_cancelled=1).all()
-    active_doctors = Doctor.query.filter_by(is_active=1).all()
-    inactive_doctors = Doctor.query.filter_by(is_active=0).all()
+        active_users.append({
+            'id': user.id,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'email': user.email,
+            'role': user.role,
+            'join_date': user.join_date,
+
+        })
+    active_appointments_query = Booking.query.filter_by(is_cancelled=0).all()
+    active_appointments = []
+    for appoint in active_appointments_query:
+        active_appointments.append({
+            'appoint_id': appoint.id,
+            'scheduler': appoint.scheduler,
+            'appoint_reason': appoint.booking_reason,
+            'booked_date': appoint.scheduled_time,
+            'booking_placed': appoint.booking_placed,
+            'booked_doctor': appoint.booked_doctor,
+            'booked_doctorid': appoint.booked_doctorid,
+            'user_id': appoint.user_id,
+
+
+
+        })
+    cancelled_appointments_query = Booking.query.filter_by(is_cancelled=1).all()
+
+    cancelled_appointments = []
+    for appoint in cancelled_appointments_query:
+        cancelled_appointments.append({
+            'appoint_id': appoint.id,
+            'scheduler': appoint.scheduler,
+            'appoint_reason': appoint.booking_reason,
+            'booked_date': appoint.scheduled_time,
+            'booking_placed': appoint.booking_placed,
+            'booked_doctor': appoint.booked_doctor,
+            'booked_doctorid': appoint.booked_doctorid,
+            'user_id': appoint.user_id,
+        })
+
+    active_doctors_query = Doctor.query.filter_by(is_active=1).all()
+    active_doctors = []
+    for doctor in active_doctors_query:
+        active_doctors.append({
+            'id': doctor.id,
+            'doctor_name': doctor.doctor_name,
+            'contact_email': doctor.contact_email,
+            'field': doctor.field,
+            'headshot': doctor.headshot,
+        })
+
+    inactive_doctors_query = Doctor.query.filter_by(is_active=0).all()
+    inactive_doctors = []
+    for doctor in inactive_doctors_query:
+        inactive_doctors.append({
+            'id': doctor.id,
+            'doctor_name': doctor.doctor_name,
+            'contact_email': doctor.contact_email,
+            'field': doctor.field,
+            'headshot': doctor.headshot,
+
+        })
+
     j = 0
+    doctor_length = 0
     for doctor in active_doctors:
         j += 1
         doctor_length = j
 
-    doctor_availability = Availability.query.all()
+    doctor_availability_query = Availability.query.all()
+    doctor_availability = []
+    for avail in doctor_availability_query:
+        doctor_availability.append({
+            'id': avail.id,
+            'day': avail.day,
+            'time': avail.time,
+            'doctor_id': avail.doctor_id,
+        })
+
+    
+    
+    return jsonify({
+        'success': True,
+        'message': 'Admin Homepage Rendered Successfully.',
+        'user_length': user_length,
+        'doctor_length': doctor_length,
+        'active_appointments': active_appointments,
+        'active_users': active_users,
+        'active_doctors': active_doctors,
+        'availability' : doctor_availability,
+        'deleted_users': deleted_users,
+        'inactive_doctors': inactive_doctors,
+        'deleted_appointments':cancelled_appointments
+
+
+    }), 200
     
 
 
-    return render_template('admin_index.html', user_length=user_length, doctor_length=doctor_length, active_appointments=active_appointments, active_users=active_users,active_doctors=active_doctors, availability=doctor_availability, deleted_users=deleted_users, inactive_doctors=inactive_doctors, deleted_appointments=cancelled_appointments)
+    
 
 @app.route('/admin_users', methods=['POST', 'GET'])
 def admin_users():

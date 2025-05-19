@@ -14,7 +14,7 @@ function UserHomepage(){
                 const response = await fetch("http://127.0.0.1:5011/homepage", {
                     credentials: 'include',
                 });
-                const data = response.json();
+                const data = await response.json();
                 if(data.success){
                     console.log(data);
                     setFirstName(data.first_name);
@@ -43,7 +43,14 @@ function UserHomepage(){
 
 
     return(
-        <h1>Hello User</h1>
+        <>
+        <h1>Welcome to BlueTree Health, {firstName}</h1>
+        <h2>Meet Your Doctors: </h2>
+        
+        </>
+        
+
+       
     );
 
 }
