@@ -56,6 +56,149 @@ function AdminHomepage(){
 
     }, [])
 
+    const fetchUserAdd = async (formData) => {
+        try{
+            const response = await fetch('http://127.0.0.1:5011/admin_add_user', {
+                method : 'POST',
+                body: formData,
+                credentials: 'include'
+
+
+        });
+            const data = await response.json();
+            if(data.success){
+              
+                alert(data.message);
+                location.reload();
+
+            }
+            else{
+               
+                alert(data.message);
+                location.reload();
+            }
+        }catch(error){
+            console.log("Error fetching repsonse");
+            alert("Error fetching response");
+        }
+    }
+
+    const fetchDoctorAdd = async (formData) => {
+
+        try{
+            const response = await fetch('http://127.0.0.1:5011/admin_add_doctor', {
+                method : 'POST',
+                body: formData,
+                credentials: 'include',
+            });
+            const data = await response.json();
+            if(data.success){
+              
+                alert(data.message);
+                location.reload();
+            }
+            else{
+               
+                alert("Unsuccessfull add");
+                location.reload();
+            }
+        }catch(error){
+            console.error("Error", error);
+            alert("Repsonse could not be fetched");
+        }
+
+    }
+    const fetchAppointAdd = async (formData) => {
+        try{
+            const response = await fetch('http://127.0.0.1:5011/admin_add_appointment', {
+                method: 'POST',
+                body: formData,
+                credentials: 'include',
+            });
+            const data = await response.json();
+            if(data.success){
+                alert(data.message);
+                location.reload();
+            }
+            else{
+                alert("Appointment could not be created successfully");
+                location.reload();
+            }
+            
+        }catch(error){
+            alert("Response could not be fetched");
+            console.log("Response could not be fetched");
+        }
+    }
+    const fetchAvailAdd = async (formData) => {
+        try{
+            const response = await fetch('http://127.0.0.1:5011/admin_add_avail', {
+                method: 'POST',
+                body: formData,
+                credentials : 'include',
+            });
+            const data = await response.json();
+            if(data.success){
+                alert(data.message);
+                location.reload();
+            }
+            else{
+                alert("Availability could not be added successfully");
+                location.reload();
+            }
+
+        }catch(error){
+            console.log("Response could not be fetched");
+            alert("Response could not be fetched.");
+        }
+    }
+    const fetchUserChange = async (formData) =>{
+
+        try{
+            const response = await fetch('http://127.0.0.1:5011/admin_users', {
+                method : "POST", 
+                body: formData,
+                credentials: 'include',
+
+            });
+            const data = await response.json();
+            if(data.success){
+                alert(data.message);
+                location.reload();
+            }
+            else{
+                alert("Change could not be submitted");
+                location.reload();
+            }
+        }catch(error){
+            console.log("Response could not be fetched");
+            alert("Response could not be fetched");
+        }
+
+    }
+    const fetchDoctorChange = async (formData) => {
+        try{
+            const response = await fetch('http://127.0.0.1:5011/admin_doctors', {
+                method: 'POST',
+                body: formData,
+                credentials: 'include',
+            });
+            const data = await response.json();
+            if(data.success){
+                alert(data.message);
+                location.reload();
+            }
+            else{
+                alert("Change could not be submitted");
+                location.reload();
+            }
+
+        }catch(error){
+            console.log("Response could not be fetched");
+            alert("Response could not be fetched");
+        }
+    }
+
     function showHome(){
         const homeDiv = document.getElementById("admin-homepage");
         if (homeDiv.style.display === "none"){
@@ -151,7 +294,8 @@ function AdminHomepage(){
 
     }
     function editDoctor(doctorId){
-         const doctorForm = document.getElementById("edit-doctor-form");
+        console.log(doctorId);
+         const doctorForm = document.getElementById("doctor-edit-form");
         const doctorDivs = document.querySelectorAll('.doctor-attribute-div');
         const hiddenInput = document.getElementById('edited-doctorid');
        
@@ -167,7 +311,7 @@ function AdminHomepage(){
 
         }
     )
-             document.getElementById(doctorId).style.display = 'block';
+            document.getElementById(doctorId).style.display = 'block';
            
             doctorForm.style.display = 'block';
             
@@ -251,15 +395,179 @@ function AdminHomepage(){
         
     }
     function addUser(){
+        const userAddForm = document.getElementById("add-user-form");
+        const userDatabase = document.getElementById("user-database");
+        userAddForm.style.display = "block";
+        userDatabase.style.display = "none";
 
     }
     function addDoctor(){
+        const doctorAddForm = document.getElementById("add-doctor-form");
+        const doctorDatabase = document.getElementById("doctor-database");
+        doctorAddForm.style.display = "block";
+        doctorDatabase.style.display = "none";
 
     }
     function addAppoint(){
+        const appointAddForm = document.getElementById("add-appoint-form");
+        const appointDatabase = document.getElementById("appoint-database");
+        appointAddForm.style.display = "block";
+        appointDatabase.style.display = "none";
 
     }
     function addAvail(){
+        const availAddForm = document.getElementById("add-avail-form");
+        const availDatabase = document.getElementById("avail-database");
+        availAddForm.style.display = "block";
+        availDatabase.style.display = "none";
+
+    }
+    function cancelAddUser(){
+        const displayedForm = document.getElementById("add-user-form");
+        const database = document.getElementById("user-database");
+        if(displayedForm.style.display === "block"){
+            displayedForm.style.display = "none";
+            database.style.display = "block";
+        }
+
+    }
+    function cancelAddDoctor(){
+        const displayedForm = document.getElementById("add-doctor-form");
+        const database = document.getElementById("doctor-database");
+        if(displayedForm.style.display === "block"){
+            displayedForm.style.display = "none";
+            database.style.display = "block";
+        }
+
+    }
+    function cancelAddAppoint(){
+        const displayedForm = document.getElementById("add-appoint-form");
+        const database = document.getElementById("appoint-database");
+        if(displayedForm.style.display === "block"){
+            displayedForm.style.display = "none";
+            database.style.display = "block";
+        }
+
+    }
+    function cancelAddAvail(){
+        const displayedForm = document.getElementById("add-avail-form");
+        const database = document.getElementById("avail-database");
+        if(displayedForm.style.display === "block"){
+            displayedForm.style.display = "none";
+            database.style.display = "block";
+        }
+
+    }
+    function handleUserSubmit(event){
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        fetchUserAdd(formData);
+
+    }
+    function handleDoctorSubmit(event){
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        fetchDoctorAdd(formData);
+    }
+    function handleAppointSubmit(event){
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        fetchAppointAdd(formData);
+    }
+    function handleAvailSubmit(event){
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        fetchAvailAdd(formData);
+    }
+    function showDeletedUsers(){
+        const activeUserTable = document.getElementById("active-user-table");
+        const deletedUserTable = document.getElementById("deleted-user-table");
+        if(activeUserTable.style.display === "block"){
+            activeUserTable.style.display = "none";
+            deletedUserTable.style.display = "block";
+
+        }
+        else{
+            deletedUserTable.style.display = "block";
+        }
+        
+
+    }
+    function showActiveUsers(){
+        const activeUserTable = document.getElementById("active-user-table");
+        const deletedUserTable = document.getElementById("deleted-user-table");
+        if(activeUserTable.style.display === "none"){
+            activeUserTable.style.display = "block";
+            deletedUserTable.style.display = "none";
+
+        }
+        else{
+            activeUserTable.style.display = "block";
+        }
+
+    }
+    function showActiveDoctors(){
+        const activeDoctorTable = document.getElementById("active-doctor-table");
+        const deletedDoctorTable = document.getElementById("deleted-doctor-table");
+        if(activeDoctorTable.style.display === "none"){
+            activeDoctorTable.style.display = "block";
+            deletedDoctorTable.style.display = "none";
+
+        }
+        else{
+            activeDoctorTable.style.display = "block";
+        }
+
+    }
+    function showInactiveDoctors(){
+        const activeDoctorTable = document.getElementById("active-doctor-table");
+        const deletedDoctorTable = document.getElementById("deleted-doctor-table");
+        if(activeDoctorTable.style.display === "block"){
+            activeDoctorTable.style.display = "none";
+            deletedDoctorTable.style.display = "block";
+
+        }
+        else{
+            deletedDoctorTable.style.display = "block";
+        }
+        
+
+    }
+    function showActiveAppoints(){
+        const activeAppointTable = document.getElementById("active-appoint-table");
+        const deletedAppointTable = document.getElementById("cancelled-appoint-table");
+        if(activeAppointTable.style.display === "none"){
+            activeAppointTable.style.display = "block";
+            deletedAppointTable.style.display = "none";
+
+        }
+        else{
+            activeAppointTable.style.display = "block";
+        }
+
+    }
+    function showDeletedAppoints(){
+        const activeAppointTable = document.getElementById("active-appoint-table");
+        const deletedAppointTable = document.getElementById("cancelled-appoint-table");
+        if(activeAppointTable.style.display === "block"){
+            activeAppointTable.style.display = "none";
+            deletedAppointTable.style.display = "block";
+
+        }
+        else{
+            deletedAppointTable.style.display = "block";
+        }
+
+    }
+    function handleUserChange(event){
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        fetchUserChange(formData);
+    }
+    function handleDoctorChange(event){
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        fetchDoctorChange(formData);
 
     }
 
@@ -303,8 +611,10 @@ function AdminHomepage(){
             </div>
             <div style={{display:'none'}} id="admin-users" className="admin-users">
             <div id="user-database" className="user-database">
-                <div className="attribute-table">
+                <div style={{display: 'block'}} id="active-user-table" className="attribute-table">
                     <button onClick={addUser}>Add User</button>
+                    <button onClick={showActiveUsers}>Active Users</button>
+                    <button onClick={showDeletedUsers}>Deleted Users</button>
                     
                          {activeUsers.map((activeUser) => (
 
@@ -318,8 +628,35 @@ function AdminHomepage(){
                         </div>
 
                     </div>
+                    
+
 
                 ))}
+               
+
+                    </div>
+                     <div style={{display: 'none'}} id="deleted-user-table" className="attribute-table">
+                        <button onClick={addUser}>Add User</button>
+                    <button onClick={showActiveUsers}>Active Users</button>
+                    <button onClick={showDeletedUsers}>Deleted Users</button>
+                    
+                         {deletedUsers.map((deletedUser) => (
+
+                    <div id={deletedUser.id} onClick={() => editUser(deletedUser.id)} key={deletedUser.id} className="user-attribute-div">
+                        
+
+                        <div class="attribute-info">
+
+                            <p><span>{deletedUser.id}</span><span>{deletedUser.first_name} {deletedUser.last_name}</span> <span>{deletedUser.email}</span> <span>{deletedUser.role}</span> <span>{deletedUser.join_date}</span></p>
+
+                        </div>
+
+                    </div>
+                    
+
+
+                ))}
+
 
                     </div>
                
@@ -327,7 +664,8 @@ function AdminHomepage(){
 
                 </div>
                 <div style={{display: 'none'}} className="add-forms" id="add-user-form">
-                    <form>
+                     <button onClick={cancelAddUser} id="cancel-user-add" className="cancel-add-button">Cancel</button>
+                    <form onSubmit={handleUserSubmit}>
                         <label htmlFor="add-firstname">First Name: </label>
                         <input type="text" id="add-firstname" name="add-firstname" required/>
                         <label htmlFor="add-lastname">Last Name: </label>
@@ -347,7 +685,8 @@ function AdminHomepage(){
 
             
                 <div style={{display: 'none'}} className="edit-forms" id="edit-user-form">
-                    <form>
+                    
+                    <form onSubmit={handleUserChange}>
                         <label htmlFor="edit-firstname">First Name: </label>
                         <input type="text" id="edit-firstname" name="edit-firstname"/>
                         <label htmlFor="edit-lastname">Last Name: </label>
@@ -363,13 +702,20 @@ function AdminHomepage(){
                 </div>
 
             </div>
+
+            {/*Doctor database*/}
+
+
+
             <div  style={{display:'none'}} id="admin-doctors" className="admin-doctors">
-                <div className="doctor-database">
-                 <div className="attribute-table">
+                <div id="doctor-database" className="doctor-database">
+                 <div style={{display:'block'}} id="active-doctor-table" className="attribute-table">
                     
                     <button onClick={addDoctor}>Add Doctor</button>
+                    <button onClick={showActiveDoctors}>Active Doctors</button>
+                    <button onClick={showInactiveDoctors}>Inactive Doctors</button>
                 {activeDoctors.map((activeDoctor) => (
-                      <div key={activeDoctor.id} onClick={()=> editDoctor(activeDoctor.id)} class="doctor-attribute-div">
+                      <div id={activeDoctor.id} key={activeDoctor.id} onClick={()=> editDoctor(activeDoctor.id)} class="doctor-attribute-div">
                         <div class="attribute-info">
 
                             <p><span>{activeDoctor.id}</span><span>{activeDoctor.doctor_name}</span><span>{activeDoctor.contact_email}</span> <span>{activeDoctor.field}</span></p>
@@ -388,8 +734,29 @@ function AdminHomepage(){
                   
 
                 </div>
+                <div style={{display: 'none'}} id="deleted-doctor-table" className="attribute-table">
+                      <button onClick={addDoctor}>Add Doctor</button>
+                      <button onClick={showActiveDoctors}>Active Doctors</button>
+                      <button onClick={showInactiveDoctors}>Inactive Doctors</button>
+                {inactiveDoctors.map((inactiveDoctor) => (
+                      <div key={inactiveDoctor.id} onClick={()=> editDoctor(inactiveDoctor.id)} class="doctor-attribute-div">
+                        <div class="attribute-info">
+
+                            <p><span>{inactiveDoctor.id}</span><span>{inactiveDoctor.doctor_name}</span><span>{inactiveDoctor.contact_email}</span> <span>{inactiveDoctor.field}</span></p>
+
+                        </div>
+
+                    </div>
+
+                ))}
+
+                  
+                
+
+
+                </div>
                 <div style={{display: 'none'}} className="edit-forms" id="doctor-edit-form">
-                    <form>
+                    <form onSubmit={handleDoctorChange}>
                         <label htmlFor="edit-doctor-name">Name: </label>
                         <input type="text" id="edit-doctor-name" name="edit-doctor-name"/>
                         <label htmlFor="edit-doctor-email">Email: </label>
@@ -405,7 +772,8 @@ function AdminHomepage(){
                 </div>
                 </div>
                 <div style={{display: 'none'}} className="add-forms" id="add-doctor-form">
-                    <form>
+                     <button onClick={cancelAddDoctor}id="cancel-doctor-add" className="cancel-add-button">Cancel</button>
+                    <form onSubmit={handleDoctorSubmit}>
                         <label htmlFor="add-doctorname">Doctor Name: </label>
                         <input type="text" id="add-doctorname" name="add-doctorname" required/>
                         <label htmlFor="add-doctoremail">Contact Email: </label>
@@ -420,13 +788,17 @@ function AdminHomepage(){
 
                 </div>
 
+                {/*Appoint database*/}
+
             </div>
             <div  style={{display:'none'}} id="admin-appoints" className="admin-appoints">
                 <div id="appoint-database" className="appoint-database">
-                 <div className="attribute-table">
+                 <div style={{display:'block'}} id="active-appoint-table" className="attribute-table">
                     <button onClick={addAppoint}>Add Appointment</button>
+                    <button onClick={showActiveAppoints}>Active Appointments</button>
+                    <button onClick={showDeletedAppoints}>Cancelled Appointments</button>
                     {activeAppoints.map((activeAppoint) => (
-                        <div onClick={() => editAppoint(activeAppoint.appoint_id)} className="appoint-attribute-div" key={activeAppoint.appoint_id}>
+                        <div id={activeAppoint.appoint_id} onClick={() => editAppoint(activeAppoint.appoint_id)} className="appoint-attribute-div" key={activeAppoint.appoint_id}>
                         <div class="attribute-info">
 
                             <p><span>{activeAppoint.booked_doctor}</span> <span>{activeAppoint.booking_reason}</span> <span>{activeAppoint.booked_date}</span> <span>{activeAppoint.scheduler}</span> </p>
@@ -437,6 +809,24 @@ function AdminHomepage(){
 
                     ))}
                     
+
+                </div>
+                <div style={{display:'none'}} id="cancelled-appoint-table" className="attribute-table">
+                    <button onClick={addAppoint}>Add Appointment</button>
+                    <button onClick={showActiveAppoints}>Active Appointments</button>
+                    <button onClick={showDeletedAppoints}>Cancelled Appointments</button>
+                    {deletedAppoints.map((deletedAppoint) => (
+                        <div onClick={() => editAppoint(deletedAppoint.appoint_id)} className="appoint-attribute-div" key={deletedAppoint.appoint_id}>
+                        <div class="attribute-info">
+
+                            <p><span>{deletedAppoint.booked_doctor}</span> <span>{deletedAppoint.booking_reason}</span> <span>{deletedAppoint.booked_date}</span> <span>{deletedAppoint.scheduler}</span> </p>
+
+                        </div>
+
+                    </div>
+
+                    ))}
+
 
                 </div>
                 <div style={{display: 'none'}} className="edit-forms" id="edit-appoint-form">
@@ -461,7 +851,8 @@ function AdminHomepage(){
                 </div>
                 </div>
                 <div style={{display: 'none'}} className="add-forms" id="add-appoint-form">
-                    <form>
+                     <button onClick={cancelAddAppoint} id="cancel-appoint-add" className="cancel-add-button">Cancel</button>
+                    <form onSubmit={handleAppointSubmit}>
                         <label htmlFor="add-scheduler">Patient Name: </label>
                         <input type="text" id="add-scheduler" name="add-scheduler" required/>
                         <label htmlFor="add-booked-doctor">Doctor Name: </label>
@@ -472,6 +863,8 @@ function AdminHomepage(){
                         <input type="text" id="add-reason" name="add-reason" required/>
                         <label htmlFor="add-booked-time">Appointment Date: </label>
                         <input type="text" id="add-booked-time" name="add-booked-time" required/>
+                        <label htmlFor="add-userid">User ID</label>
+                        <input type="number" id="add-userid" name="add-userid" required/>
                         
 
 
@@ -487,7 +880,7 @@ function AdminHomepage(){
                  <div onClick={editAvail} className="attribute-table">
                     <button onClick={addAvail}>Add Availability</button>
                     {availability.map((avail) => (
-                        <div onClick={() => editAppoint(avail.id)} class="avail-attribute-div" key={avail.id}>
+                        <div id={avail.id} onClick={() => editAppoint(avail.id)} class="avail-attribute-div" key={avail.id}>
                         <div class="attribute-info">
 
                             <p><span>{avail.doctor_id}</span> <span>{avail.day}</span> <span>{avail.time}</span></p>
@@ -514,6 +907,22 @@ function AdminHomepage(){
                     </form>
 
                 </div>
+                
+
+                </div>
+                <div style={{display: 'none'}} className="add-forms" id="add-avail-form">
+                    <button onClick={cancelAddAvail} id="cancel-avail-add" className="cancel-add-button">Cancel</button>
+                    <form onSubmit={handleAvailSubmit}>
+                        <label htmlFor="add-availdoctor">Doctor ID: </label>
+                        <input type="number" id="add-availdoctor" name="add-availdoctor" required/>
+                        <label htmlFor="add-day">Day: </label>
+                        <input type="text" id="add-day" name="add-day" required/>
+                        <label htmlFor="add-time">Time: </label>
+                        <input type="text" id="add-time" name="add-time" required/>
+                       
+                        
+                        <button type="submit">Add Availability</button>
+                    </form>
 
                 </div>
 

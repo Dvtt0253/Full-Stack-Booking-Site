@@ -708,11 +708,11 @@ def admin_homepage():
 
 @app.route('/admin_users', methods=['POST', 'GET'])
 def admin_users():
-    changed_first = request.form['first-name-change']
-    changed_last = request.form['last-name-change']
-    changed_email = request.form['admin-email-change']
-    changed_role = request.form['admin-role-change']
-    user_id = request.form['changed-userid']
+    changed_first = request.form['edit-firstname']
+    changed_last = request.form['edit-lastname']
+    changed_email = request.form['edit-user-email']
+    changed_role = request.form['edit-role']
+    user_id = request.form['edited-userid']
 
     user_to_change = User.query.filter_by(id=user_id).first()
     if user_to_change:
@@ -726,7 +726,10 @@ def admin_users():
             user_to_change.role = changed_role
         db.session.commit()
 
-        return redirect(url_for("admin_homepage"))
+        return jsonify({
+            'success': True,
+            'message': 'User Info Change Successfully',
+        })
 
 
 
@@ -736,10 +739,11 @@ def admin_users():
 
 @app.route('/admin_doctors', methods=['POST', 'GET'])
 def admin_doctors():
-    changed_name = request.form['doctor-name-change']
-    changed_contact = request.form['doctor-email-change']
-    changed_field = request.form['doctor-field-change']
-    doctor_id = request.form['changed-doctor-id']
+    changed_name = request.form['edit-doctor-name']
+    changed_contact = request.form['edit-doctor-email']
+    changed_field = request.form['edit-doctor-field']
+    changed_photo = request.form['edit-doctor-photo']
+    doctor_id = request.form['edited-doctorid']
     doctor_to_change = Doctor.query.filter_by(id=doctor_id).first()
     if doctor_to_change:
         if changed_name:
@@ -748,8 +752,13 @@ def admin_doctors():
             doctor_to_change.contact_emai = changed_contact
         if changed_field:
             doctor_to_change.field = changed_field
+        if changed_photo:
+            doctor_to_change.headshot = changed_photo
         db.session.commit()
-        return redirect(url_for("admin_homepage"))
+        return jsonify ({
+            'success': True,
+            'message': 'Doctor change has been submitted successfully'
+        })
     
 @app.route('/admin_avail')
 def admin_avail():
@@ -770,18 +779,22 @@ def admin_avail():
 @app.route('/admin_add_user', methods=['POST', 'GET'])
 def admin_add_user():
     try:
-        new_first_name = request.form['new-first-name']
-        new_last_name = request.form['new-last-name']
-        new_email = request.form['admin-new-email'].lower()
-        new_password = request.form['admin-new-password']
-        confirm_password = request.form['admin-password-confirm']
+        new_first_name = request.form['add-firstname']
+        new_last_name = request.form['add-lastname']
+        new_email = request.form['add-useremail'].lower()
+        new_password = request.form['add-password']
+        confirm_password = request.form['confirm-password']
         if new_password == confirm_password:
             new_password = ph.hash(new_password)
         else:
-            flash("Passwords Do Not Match.", category="error")
-            return redirect(url_for("admin_homepage"))
+            return jsonify({
+                'success':False,
+                'message': 'Passwords do not match'
+            })
         
-        new_role = request.form['admin-new-role']
+        new_role = request.form['add-role'] or "User"
+       
+        
         join_date = datetime.now()
 
         new_user = User(first_name=new_first_name, last_name=new_last_name, email=new_email, hashed_password=new_password, role=new_role, join_date=join_date)
@@ -789,37 +802,50 @@ def admin_add_user():
         db.session.add(new_user)
         db.session.commit()
     except IntegrityError:
-        flash("User Already Exists.", category="error")
-        return redirect(url_for("admin_homepage"))
+        return jsonify ({
+            'success': False,
+            'message': 'User Alread Exists',
+
+        })
 
 
-    return redirect(url_for("admin_homepage"))
+    return jsonify ({
+        'success': True,
+        'message': 'User Added Successfully'
+    })
 
 @app.route('/admin_add_doctor', methods=['POST', 'GET'])
 def admin_add_doctor():
-    new_doctor_name = request.form['new-doctor-name']
-    new_doctor_email = request.form['new-doctor-email']
-    new_doctor_field = request.form['new-doctor-field']
-    new_doctor_headshot = request.form['new-doctor-headshot']
+    new_doctor_name = request.form['add-doctorname']
+    new_doctor_email = request.form['add-doctoremail']
+    new_doctor_field = request.form['add-doctorfield']
+    new_doctor_headshot = request.form['add-headshot']
     
     new_doctor = Doctor(doctor_name=new_doctor_name, contact_email=new_doctor_email, field=new_doctor_field, headshot=new_doctor_headshot)
     db.session.add(new_doctor)
     db.session.commit()
 
-    return redirect(url_for("admin_homepage"))
+    return jsonify({
+        'success': True,
+        'message': 'Doctor Added Successfully',
+
+    })
 
 
 @app.route('/admin_add_avail', methods=['POST', 'GET'])
 def admin_add_avail():
-    doctor_id = request.form['avail-doctor-id']
-    new_day = request.form['admin-new-weekday']
-    new_time = request.form['admin-new-time']
+    doctor_id = request.form['add-availdoctor']
+    new_day = request.form['add-day']
+    new_time = request.form['add-time']
 
     new_avail = Availability(doctor_id=doctor_id, day=new_day, time=new_time)
     db.session.add(new_avail)
     db.session.commit()
 
-    return redirect(url_for("admin_homepage"))
+    return jsonify({
+        'success': True,
+        'message': "Availability added successfully",
+    })
 
 @app.route('/admin_delete_user', methods=['POST', 'GET'])
 def admin_delete_user():
@@ -882,19 +908,23 @@ def admin_appointments():
 @app.route('/admin_add_appointment', methods=['POST', 'GET'])
 def admin_add_appointment():
 
-    new_booking_reason = request.form['new-booking-reason']
-    new_scheduled_time = request.form['new-booking-date']
+    new_booking_reason = request.form['add-reason']
+    new_scheduled_time = request.form['add-booked-time']
     booking_placed = datetime.now()
-    new_booked_doctor = request.form['new-preferred-doctor']
-    new_booked_doctorid = request.form['new-booked-doctor-id']
-    user_id = request.form['new-booking-user']
-    new_scheduler = request.form['new-patient-name']
+    new_booked_doctor = request.form['add-booked-doctor']
+    new_booked_doctorid = request.form['add-doctorid']
+    user_id = request.form['add-userid']
+    new_scheduler = request.form['add-scheduler']
 
     new_appoint = Booking(booking_reason=new_booking_reason, scheduled_time=new_scheduled_time, booking_placed=booking_placed, booked_doctor=new_booked_doctor, booked_doctorid=new_booked_doctorid, user_id=user_id, scheduler=new_scheduler)
     db.session.add(new_appoint)
     db.session.commit()
 
-    return redirect(url_for("admin_homepage"))
+    return jsonify({
+        'success': True,
+        'message': "Appointment Added Successfully",
+        
+    })
 
 @app.route('/delete_deleted_users')
 def delete_deleted_users():

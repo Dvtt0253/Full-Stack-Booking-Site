@@ -103,4 +103,43 @@
 .edit-forms label{
     display: block;
 
+
+}
+.add-forms{
+    width:fit-content;
+    margin:auto;
+    margin-top:10vh;
+    background-color: #e0e0e0;
+    padding:20px;
+    
+}
+.add-forms input{
+    display: block;
+    width:20vw;
+    height:2vh;
+    margin-bottom:3vh;
+    border-radius: 2px;
+    padding:3px
+
+}
+.add-forms label{
+    display:block;
+    margin-bottom:1vh;
+    text-align: center;
+}
+.add-forms button{
+    display:block;
+    margin:auto;
+    width:20vw;
+    height:3vh;
+    border:none;
+    border-radius:5px;
+    background-color: #4B4B4B;
+    color:white;
+    cursor:pointer;
+    font-weight: bold;
+
+}
+.add-forms button:hover{
+    background-color: #5A5A5A;
 }
