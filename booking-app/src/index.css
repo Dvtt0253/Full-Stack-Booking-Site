@@ -75,13 +75,14 @@
    
 
 }
-.user-attribute-div, .doctor-attribute-div, .appoint-attribute-div{
+.user-attribute-div, .doctor-attribute-div, .appoint-attribute-div, .avail-attribute-div{
     width:80vw;
     height:3vw;
     border: 1px solid black;
     margin-bottom: 0.5vh;
     padding-top:2vh;
     padding-bottom:2vh;
+    cursor:pointer;
 
 }
 .attribute-info{
@@ -94,9 +95,38 @@
 
 
 
+
+
+}
+.edit-forms button:not(.delete-attribute-button){
+    display:block;
+    margin:auto;
+    width:20vw;
+    height:3vh;
+    border:none;
+    border-radius:5px;
+    background-color: #4B4B4B;
+    color:white;
+    cursor:pointer;
+    font-weight: bold;
+    margin-bottom:5vh;
+}
+.edit-forms{
+    width: fit-content;
+    height: fit-content;
+    margin:auto;
+    margin-top:15vh;
+    background-color: #e0e0e0 ;
+    padding:20px;
+
 }
 .edit-forms input{
     display:block;
+    margin-bottom:3vh;
+    width:20vw;
+    height: 3vh;
+    border-radius:2px;
+
 
 
 }
@@ -127,7 +157,7 @@
     margin-bottom:1vh;
     text-align: center;
 }
-.add-forms button{
+.add-forms button:not(.cancel-add-button){
     display:block;
     margin:auto;
     width:20vw;
@@ -140,6 +170,75 @@
     font-weight: bold;
 
 }
-.add-forms button:hover{
+.add-forms button:not(.cancel-add-button):hover, .edit-forms button:not(.delete-attribute-button):hover{
     background-color: #5A5A5A;
+}
+.delete-attribute-button{
+    border:none;
+    width: 20vw;
+    height:2vh;
+    background-color: #e0e0e0;
+    font-weight: bold;
+    color:red;
+    cursor:pointer;
+    font-size: 0.98rem;
+
+}
+.delete-attribute-button:hover{
+    color:#ff4d4d;
+    text-decoration: underline;
+}
+.edit-forms h3, .add-forms h3{
+    text-align: center;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 5vh;
+
+}
+.cancel-add-button{
+    border:none;
+    background-color: #e0e0e0;
+    color:red;
+    font-weight: bold;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+.cancel-add-button:hover{
+    color:#ff4d4d;
+    text-decoration: underline;
+}
+.add-attribute-buttons{
+    border:none;
+    background-color:white;
+    color:#0a1f44;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    
+    cursor: pointer;
+    border-right:0.5px solid black;
+
+}
+.add-attribute-buttons:hover{
+    text-decoration:underline;
+    color:#4B4B4B;
+}
+.toggle-attribute-buttons{
+    border:none;
+    background-color:white;
+    color:#0a1f44;
+    border-right:0.5px solid black;
+    font-weight:bold;
+    letter-spacing: 0.5px;
+    cursor:pointer;
+
+}
+.toggle-attribute-buttons:hover{
+    color: #4B4B4B;
+    text-decoration: underline;
+
+
+
+}
+.user-attribute-div:hover, .doctor-attribute-div:hover, .appoint-attribute-div:hover, .avail-attribute-div:hover{
+    background-color: #e0e0e0;
 }

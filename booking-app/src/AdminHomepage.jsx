@@ -198,6 +198,137 @@ function AdminHomepage(){
             alert("Response could not be fetched");
         }
     }
+    const fetchAppointChange = async(formData) => {
+        try{
+            const response = await fetch('http://127.0.0.1:5011/admin_appointments', {
+                method: "POST",
+                body: formData,
+                credentials: 'include',
+            });
+            const data = await response.json();
+            if(data.success){
+                alert(data.message);
+                location.reload();
+            }
+            else{
+                alert("Change could not be completed");
+                location.reload();
+            }
+        }catch(error){
+            console.log("Fetch could not be completed");
+            alert("Fetch could not be completed");
+        }
+    }
+    const fetchAvailChange = async(formData) => {
+        try{
+            const response = await fetch('http://127.0.0.1:5011/admin_avail', {
+                method: 'POST', 
+                body: formData,
+                credentials: 'include',
+            });
+            const data = await response.json();
+            if(data.success){
+                alert(data.message);
+                location.reload();
+            }
+            else{
+                alert("Change could not be submitted successfully");
+                location.reload();
+            }
+        }catch(error){
+            console.log("Fetch not recieved");
+            alert("Fetch could not be completed");
+        }
+    }
+    const fetchUserDelete = async(formData) => {
+        try{
+            const response = await fetch('http://127.0.0.1:5011/admin_delete_user', {
+                method: 'POST',
+                body: formData,
+                credentials: 'include',
+            });
+
+            const data = await response.json();
+            if(data.success){
+                alert(data.message);
+                location.reload();
+            }
+            else{
+                alert("Delete could not be completed successfully");
+                location.reload();
+            }
+        }catch(error){
+            alert("Fetch could not be completed");
+            console.log("Fetch could not be completed");
+        }
+    }
+    const fetchDoctorDelete = async(formData) => {
+        try{
+            const response = await fetch("http://127.0.0.1:5011/admin_delete_doctor", {
+                method : 'POST',
+                body: formData,
+                credentials: 'include',
+            });
+            const data = await response.json()
+
+            if(data.success){
+                alert(data.message);
+                location.reload();
+            }
+            else{
+                alert("Doctor could not be deleted");
+                location.reload();
+            }
+        }catch(error){
+            console.log("Fetch could not be completed");
+            alert("Fetch could not be completed");
+        }
+    }
+     const fetchAppointDelete = async(formData) => {
+        try{
+            const response = await fetch("http://127.0.0.1:5011/admin_delete_appointment", {
+                method : 'POST',
+                body: formData,
+                credentials: 'include',
+            });
+            const data = await response.json()
+
+            if(data.success){
+                alert(data.message);
+                location.reload();
+            }
+            else{
+                alert("Appointment could not be deleted");
+                location.reload();
+            }
+        }catch(error){
+            console.log("Fetch could not be completed");
+            alert("Fetch could not be completed");
+        }
+    }
+    const fetchAvailDelete= async(formData) => {
+        try{
+            const response = await fetch("http://127.0.0.1:5011/admin_delete_avail", {
+                method : 'POST',
+                body: formData,
+                credentials: 'include',
+            });
+            const data = await response.json()
+
+            if(data.success){
+                alert(data.message);
+                location.reload();
+            }
+            else{
+                alert("Availability could not be deleted");
+                location.reload();
+            }
+        }catch(error){
+            console.log("Fetch could not be completed");
+            alert("Fetch could not be completed");
+        }
+    }
+
 
     function showHome(){
         const homeDiv = document.getElementById("admin-homepage");
@@ -259,11 +390,13 @@ function AdminHomepage(){
         const userForm = document.getElementById("edit-user-form");
         const userDivs = document.querySelectorAll('.user-attribute-div');
         const hiddenInput = document.getElementById('edited-userid');
+        const hiddenDeleted = document.getElementById("deleted-userid");
        
        
         if(userForm.style.display == 'none'){
 
             hiddenInput.value = userId;
+            hiddenDeleted.value = userId;
             console.log(hiddenInput.value);
            
              userDivs.forEach((div, index) =>{
@@ -272,7 +405,7 @@ function AdminHomepage(){
 
         }
     )
-             document.getElementById(userId).style.display = 'block';
+             document.getElementById(`user-${userId}`).style.display = 'block';
            
             userForm.style.display = 'block';
             
@@ -295,36 +428,28 @@ function AdminHomepage(){
     }
     function editDoctor(doctorId){
         console.log(doctorId);
-         const doctorForm = document.getElementById("doctor-edit-form");
+        const doctorForm = document.getElementById("doctor-edit-form");
         const doctorDivs = document.querySelectorAll('.doctor-attribute-div');
         const hiddenInput = document.getElementById('edited-doctorid');
-       
-       
+        const hiddenDeleted = document.getElementById('deleted-doctorid');
+
         if(doctorForm.style.display == 'none'){
-
             hiddenInput.value = doctorId;
-            console.log(hiddenInput.value);
-           
-             doctorDivs.forEach((div, index) =>{
-
-            div.style.display = 'none';
-
-        }
-    )
-            document.getElementById(doctorId).style.display = 'block';
-           
+            hiddenDeleted.value = doctorId;
+            doctorDivs.forEach((div1, index) => {
+                div1.style.display = 'none';
+            })
+            document.getElementById(`doctor-${doctorId}`).style.display = 'block';
             doctorForm.style.display = 'block';
-            
-
-            
         }
         else{
             doctorForm.style.display = 'none';
-            doctorDivs.forEach((doctordiv, index) =>{
-                doctordiv.style.display = 'block';
-            }
-        )
+            doctorDivs.forEach((div1, index) => {
+                div1.style.display = 'block';
+            })
+
         }
+       
 
         
     }
@@ -332,11 +457,13 @@ function AdminHomepage(){
           const appointForm = document.getElementById("edit-appoint-form");
         const appointDivs = document.querySelectorAll('.appoint-attribute-div');
         const hiddenInput = document.getElementById('edited-appointid');
+        const hiddenDeleted = document.getElementById("deleted-appointid");
        
        
         if(appointForm.style.display == 'none'){
 
             hiddenInput.value = appointId;
+            hiddenDeleted.value = appointId;
             console.log(hiddenInput.value);
            
              appointDivs.forEach((div, index) =>{
@@ -345,7 +472,7 @@ function AdminHomepage(){
 
         }
     )
-             document.getElementById(appointId).style.display = 'block';
+             document.getElementById(`appoint-${appointId}`).style.display = 'block';
            
             appointForm.style.display = 'block';
             
@@ -362,14 +489,16 @@ function AdminHomepage(){
         
     }
     function editAvail(availId){
-          const availForm = document.getElementById("edit-avail-form");
+        const availForm = document.getElementById("edit-avail-form");
         const availDivs = document.querySelectorAll('.avail-attribute-div');
         const hiddenInput = document.getElementById('edited-availid');
+        const hiddenDelete = document.getElementById("deleted-availid");
        
        
-        if(appointForm.style.display == 'none'){
+        if(availForm.style.display == 'none'){
 
             hiddenInput.value = availId;
+            hiddenDelete.value = availId;
             console.log(hiddenInput.value);
            
              availDivs.forEach((div, index) =>{
@@ -378,7 +507,7 @@ function AdminHomepage(){
 
         }
     )
-             document.getElementById(availId).style.display = 'block';
+             document.getElementById(`avail-${availId}`).style.display = 'block';
            
             availForm.style.display = 'block';
             
@@ -570,6 +699,46 @@ function AdminHomepage(){
         fetchDoctorChange(formData);
 
     }
+    function handleAppointChange(event){
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        fetchAppointChange(formData);
+
+    }
+    function handleAvailChange(event){
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        fetchAvailChange(formData);
+
+    }
+    function handleUserDelete(event){
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        fetchUserDelete(formData);
+
+    }
+    function handleDoctorDelete(event){
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        fetchDoctorDelete(formData);
+        
+    }
+    function handleAppointDelete(event){
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        fetchAppointDelete(formData);
+
+        
+    }
+    function handleAvailDelete(event){
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        fetchAvailDelete(formData);
+        
+    }
+
+
+
 
 
 
@@ -612,13 +781,13 @@ function AdminHomepage(){
             <div style={{display:'none'}} id="admin-users" className="admin-users">
             <div id="user-database" className="user-database">
                 <div style={{display: 'block'}} id="active-user-table" className="attribute-table">
-                    <button onClick={addUser}>Add User</button>
-                    <button onClick={showActiveUsers}>Active Users</button>
-                    <button onClick={showDeletedUsers}>Deleted Users</button>
+                    <button className="add-attribute-buttons" onClick={addUser}>Add User</button>
+                    <button  className="toggle-attribute-buttons" onClick={showActiveUsers}>Active Users</button>
+                    <button  className="toggle-attribute-buttons" onClick={showDeletedUsers}>Deleted Users</button>
                     
                          {activeUsers.map((activeUser) => (
 
-                    <div id={activeUser.id} onClick={() => editUser(activeUser.id)} key={activeUser.id} className="user-attribute-div">
+                    <div id={`user-${activeUser.id}`} onClick={() => editUser(activeUser.id)} key={activeUser.id} className="user-attribute-div">
                         
 
                         <div class="attribute-info">
@@ -636,13 +805,13 @@ function AdminHomepage(){
 
                     </div>
                      <div style={{display: 'none'}} id="deleted-user-table" className="attribute-table">
-                        <button onClick={addUser}>Add User</button>
-                    <button onClick={showActiveUsers}>Active Users</button>
-                    <button onClick={showDeletedUsers}>Deleted Users</button>
+                        <button className="add-attribute-buttons" onClick={addUser}>Add User</button>
+                    <button className="toggle-attribute-buttons" onClick={showActiveUsers}>Active Users</button>
+                    <button  className="toggle-attribute-buttons" onClick={showDeletedUsers}>Deleted Users</button>
                     
                          {deletedUsers.map((deletedUser) => (
 
-                    <div id={deletedUser.id} onClick={() => editUser(deletedUser.id)} key={deletedUser.id} className="user-attribute-div">
+                    <div id="user-{deletedUser.id}" key={deletedUser.id} className="user-attribute-div">
                         
 
                         <div class="attribute-info">
@@ -666,6 +835,7 @@ function AdminHomepage(){
                 <div style={{display: 'none'}} className="add-forms" id="add-user-form">
                      <button onClick={cancelAddUser} id="cancel-user-add" className="cancel-add-button">Cancel</button>
                     <form onSubmit={handleUserSubmit}>
+                        <h3>Add User</h3>
                         <label htmlFor="add-firstname">First Name: </label>
                         <input type="text" id="add-firstname" name="add-firstname" required/>
                         <label htmlFor="add-lastname">Last Name: </label>
@@ -687,6 +857,7 @@ function AdminHomepage(){
                 <div style={{display: 'none'}} className="edit-forms" id="edit-user-form">
                     
                     <form onSubmit={handleUserChange}>
+                        <h3>Edit User</h3>
                         <label htmlFor="edit-firstname">First Name: </label>
                         <input type="text" id="edit-firstname" name="edit-firstname"/>
                         <label htmlFor="edit-lastname">Last Name: </label>
@@ -697,6 +868,10 @@ function AdminHomepage(){
                         <input type="text" id="edit-role" name="edit-role"/>
                         <input type="hidden" id="edited-userid" name="edited-userid"/>
                         <button type="submit">Submit Changes</button>
+                    </form>
+                    <form onSubmit={handleUserDelete}>
+                        <button className="delete-attribute-button" type="submit">Delete User</button>
+                        <input type="hidden" id="deleted-userid" name="deleted-userid"/>
                     </form>
 
                 </div>
@@ -711,14 +886,14 @@ function AdminHomepage(){
                 <div id="doctor-database" className="doctor-database">
                  <div style={{display:'block'}} id="active-doctor-table" className="attribute-table">
                     
-                    <button onClick={addDoctor}>Add Doctor</button>
-                    <button onClick={showActiveDoctors}>Active Doctors</button>
-                    <button onClick={showInactiveDoctors}>Inactive Doctors</button>
+                    <button className="add-attribute-buttons" onClick={addDoctor}>Add Doctor</button>
+                    <button  className="toggle-attribute-buttons" onClick={showActiveDoctors}>Active Doctors</button>
+                    <button  className="toggle-attribute-buttons" onClick={showInactiveDoctors}>Inactive Doctors</button>
                 {activeDoctors.map((activeDoctor) => (
-                      <div id={activeDoctor.id} key={activeDoctor.id} onClick={()=> editDoctor(activeDoctor.id)} class="doctor-attribute-div">
+                      <div id={`doctor-${activeDoctor.id}`} key={activeDoctor.id} onClick={()=> editDoctor(activeDoctor.id)} class="doctor-attribute-div">
                         <div class="attribute-info">
 
-                            <p><span>{activeDoctor.id}</span><span>{activeDoctor.doctor_name}</span><span>{activeDoctor.contact_email}</span> <span>{activeDoctor.field}</span></p>
+                            <p><span>{activeDoctor.id}</span><span>{`Dr. ${activeDoctor.doctor_name}`}</span><span>{activeDoctor.contact_email}</span> <span>{activeDoctor.field}</span></p>
 
                         </div>
 
@@ -735,14 +910,14 @@ function AdminHomepage(){
 
                 </div>
                 <div style={{display: 'none'}} id="deleted-doctor-table" className="attribute-table">
-                      <button onClick={addDoctor}>Add Doctor</button>
-                      <button onClick={showActiveDoctors}>Active Doctors</button>
-                      <button onClick={showInactiveDoctors}>Inactive Doctors</button>
+                      <button className="add-attribute-buttons" onClick={addDoctor}>Add Doctor</button>
+                      <button  className="toggle-attribute-buttons" onClick={showActiveDoctors}>Active Doctors</button>
+                      <button  className="toggle-attribute-buttons" onClick={showInactiveDoctors}>Inactive Doctors</button>
                 {inactiveDoctors.map((inactiveDoctor) => (
-                      <div key={inactiveDoctor.id} onClick={()=> editDoctor(inactiveDoctor.id)} class="doctor-attribute-div">
+                      <div key={inactiveDoctor.id} class="doctor-attribute-div">
                         <div class="attribute-info">
 
-                            <p><span>{inactiveDoctor.id}</span><span>{inactiveDoctor.doctor_name}</span><span>{inactiveDoctor.contact_email}</span> <span>{inactiveDoctor.field}</span></p>
+                            <p><span>{inactiveDoctor.id}</span><span>{`Dr. ${inactiveDoctor.doctor_name}`}</span><span>{inactiveDoctor.contact_email}</span> <span>{inactiveDoctor.field}</span></p>
 
                         </div>
 
@@ -757,6 +932,7 @@ function AdminHomepage(){
                 </div>
                 <div style={{display: 'none'}} className="edit-forms" id="doctor-edit-form">
                     <form onSubmit={handleDoctorChange}>
+                         <h3>Edit Doctor</h3>
                         <label htmlFor="edit-doctor-name">Name: </label>
                         <input type="text" id="edit-doctor-name" name="edit-doctor-name"/>
                         <label htmlFor="edit-doctor-email">Email: </label>
@@ -769,11 +945,18 @@ function AdminHomepage(){
                         <button type="submit">Submit Changes</button>
                     </form>
 
+                    <form onSubmit={handleDoctorDelete}>
+                        <input type="hidden" id="deleted-doctorid" name="deleted-doctorid"/>
+                        <button className="delete-attribute-button" type="submit">Deactivate Doctor</button>
+                        
+                    </form>
+
                 </div>
                 </div>
                 <div style={{display: 'none'}} className="add-forms" id="add-doctor-form">
                      <button onClick={cancelAddDoctor}id="cancel-doctor-add" className="cancel-add-button">Cancel</button>
                     <form onSubmit={handleDoctorSubmit}>
+                        <h3>Add Doctor</h3>
                         <label htmlFor="add-doctorname">Doctor Name: </label>
                         <input type="text" id="add-doctorname" name="add-doctorname" required/>
                         <label htmlFor="add-doctoremail">Contact Email: </label>
@@ -794,14 +977,14 @@ function AdminHomepage(){
             <div  style={{display:'none'}} id="admin-appoints" className="admin-appoints">
                 <div id="appoint-database" className="appoint-database">
                  <div style={{display:'block'}} id="active-appoint-table" className="attribute-table">
-                    <button onClick={addAppoint}>Add Appointment</button>
-                    <button onClick={showActiveAppoints}>Active Appointments</button>
-                    <button onClick={showDeletedAppoints}>Cancelled Appointments</button>
+                    <button className="add-attribute-buttons" onClick={addAppoint}>Add Appointment</button>
+                    <button  className="toggle-attribute-buttons" onClick={showActiveAppoints}>Active Appointments</button>
+                    <button  className="toggle-attribute-buttons" onClick={showDeletedAppoints}>Cancelled Appointments</button>
                     {activeAppoints.map((activeAppoint) => (
-                        <div id={activeAppoint.appoint_id} onClick={() => editAppoint(activeAppoint.appoint_id)} className="appoint-attribute-div" key={activeAppoint.appoint_id}>
+                        <div id={`appoint-${activeAppoint.appoint_id}`} onClick={() => editAppoint(activeAppoint.appoint_id)} className="appoint-attribute-div" key={activeAppoint.appoint_id}>
                         <div class="attribute-info">
 
-                            <p><span>{activeAppoint.booked_doctor}</span> <span>{activeAppoint.booking_reason}</span> <span>{activeAppoint.booked_date}</span> <span>{activeAppoint.scheduler}</span> </p>
+                            <p><span>{`Dr. ${activeAppoint.booked_doctor}`}</span> <span>{activeAppoint.booking_reason}</span> <span>{activeAppoint.booked_date}</span> <span>{activeAppoint.scheduler}</span> </p>
 
                         </div>
 
@@ -812,14 +995,14 @@ function AdminHomepage(){
 
                 </div>
                 <div style={{display:'none'}} id="cancelled-appoint-table" className="attribute-table">
-                    <button onClick={addAppoint}>Add Appointment</button>
-                    <button onClick={showActiveAppoints}>Active Appointments</button>
-                    <button onClick={showDeletedAppoints}>Cancelled Appointments</button>
+                    <button className="add-attribute-buttons" onClick={addAppoint}>Add Appointment</button>
+                    <button  className="toggle-attribute-buttons" onClick={showActiveAppoints}>Active Appointments</button>
+                    <button  className="toggle-attribute-buttons" onClick={showDeletedAppoints}>Cancelled Appointments</button>
                     {deletedAppoints.map((deletedAppoint) => (
-                        <div onClick={() => editAppoint(deletedAppoint.appoint_id)} className="appoint-attribute-div" key={deletedAppoint.appoint_id}>
+                        <div className="appoint-attribute-div" key={deletedAppoint.appoint_id}>
                         <div class="attribute-info">
 
-                            <p><span>{deletedAppoint.booked_doctor}</span> <span>{deletedAppoint.booking_reason}</span> <span>{deletedAppoint.booked_date}</span> <span>{deletedAppoint.scheduler}</span> </p>
+                            <p><span>{`Dr. ${deletedAppoint.booked_doctor}`}</span> <span>{deletedAppoint.booking_reason}</span> <span>{deletedAppoint.booked_date}</span> <span>{deletedAppoint.scheduler}</span> </p>
 
                         </div>
 
@@ -830,10 +1013,11 @@ function AdminHomepage(){
 
                 </div>
                 <div style={{display: 'none'}} className="edit-forms" id="edit-appoint-form">
-                    <form>
+                    <form onSubmit={handleAppointChange}>
+                         <h3>Edit Appointment</h3>
                         <label htmlFor="edit-booked-doctor">Doctor Name: </label>
                         <input type="text" id="edit-booked-doctor" name="edit-booked-doctor"/>
-                        <label htmlFor="edit-booking-reason"> Date: </label>
+                        <label htmlFor="edit-booking-reason"> Reason: </label>
                         <input type="text" id="edit-booking-reason" name="edit-booking-reason"/>
                         
                        
@@ -842,10 +1026,16 @@ function AdminHomepage(){
                         <label htmlFor="edit-booking-patient"> Patient Name: </label>
                         <input type="text" id="edit-booking-patient" name="edit-booking-patient"/>
                         <input type="hidden" id="edited-appointid" name="edited-appointid"/>
+                        <button type="submit">Submit Changes</button>
 
 
 
 
+                    </form>
+                    <form onSubmit={handleAppointDelete}>
+                        <input type="hidden" id="deleted-appointid" name="deleted-appointid"/>
+                        <button className="delete-attribute-button" type="submit">Cancel Appointment</button>
+                        
                     </form>
 
                 </div>
@@ -853,6 +1043,7 @@ function AdminHomepage(){
                 <div style={{display: 'none'}} className="add-forms" id="add-appoint-form">
                      <button onClick={cancelAddAppoint} id="cancel-appoint-add" className="cancel-add-button">Cancel</button>
                     <form onSubmit={handleAppointSubmit}>
+                        <h3>Add Appointment</h3>
                         <label htmlFor="add-scheduler">Patient Name: </label>
                         <input type="text" id="add-scheduler" name="add-scheduler" required/>
                         <label htmlFor="add-booked-doctor">Doctor Name: </label>
@@ -877,10 +1068,10 @@ function AdminHomepage(){
             </div>
             <div  style={{display:'none'}} id="admin-avail" className="admin-avail">
                 <div id="avail-database" className="avail-database">
-                 <div onClick={editAvail} className="attribute-table">
-                    <button onClick={addAvail}>Add Availability</button>
+                 <div id="avail-table" className="attribute-table">
+                    <button className="add-attribute-buttons" onClick={addAvail}>Add Availability</button>
                     {availability.map((avail) => (
-                        <div id={avail.id} onClick={() => editAppoint(avail.id)} class="avail-attribute-div" key={avail.id}>
+                        <div id={`avail-${avail.id}`} onClick={() => editAvail(avail.id)} className="avail-attribute-div" key={avail.id}>
                         <div class="attribute-info">
 
                             <p><span>{avail.doctor_id}</span> <span>{avail.day}</span> <span>{avail.time}</span></p>
@@ -894,16 +1085,21 @@ function AdminHomepage(){
 
                 </div>
                 <div style={{display: 'none'}} className="edit-forms" id="edit-avail-form">
-                    <form>
+                    <form onSubmit={handleAvailChange}>
+                         <h3>Edit Availability</h3>
                         <label htmlFor="edit-day">Day: </label>
                         <input type="text" id="edit-day" name="edit-day"/>
                         <label htmlFor="edit-time">Time: </label>
                         <input type="text" id="edit-time" name="edit-time"/>
-                        <label htmlFor="edit-doctorid">Doctor ID: </label>
-                        <input type="number" id="edit-doctorid" name="edit-doctorid"/>
+                        
                         <input type="hidden" id="edited-availid" name="edited-availid"/>
                         <button>Submit Changes</button>
 
+                    </form>
+                    <form onSubmit={handleAvailDelete}>
+                        <input type="hidden" id="deleted-availid" name="deleted-availid"/>
+                        <button className="delete-attribute-button" type="submit">Delete Availability</button>
+                        
                     </form>
 
                 </div>
@@ -911,8 +1107,9 @@ function AdminHomepage(){
 
                 </div>
                 <div style={{display: 'none'}} className="add-forms" id="add-avail-form">
-                    <button onClick={cancelAddAvail} id="cancel-avail-add" className="cancel-add-button">Cancel</button>
+                    <button className="add-attribute-buttons" onClick={cancelAddAvail} id="cancel-avail-add" className="cancel-add-button" >Cancel</button>
                     <form onSubmit={handleAvailSubmit}>
+                        <h3>Add Availability</h3>
                         <label htmlFor="add-availdoctor">Doctor ID: </label>
                         <input type="number" id="add-availdoctor" name="add-availdoctor" required/>
                         <label htmlFor="add-day">Day: </label>

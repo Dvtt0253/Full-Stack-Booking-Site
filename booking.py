@@ -713,8 +713,11 @@ def admin_users():
     changed_email = request.form['edit-user-email']
     changed_role = request.form['edit-role']
     user_id = request.form['edited-userid']
+   
 
     user_to_change = User.query.filter_by(id=user_id).first()
+   
+   
     if user_to_change:
         if changed_first:
             user_to_change.first_name = changed_first
@@ -760,11 +763,11 @@ def admin_doctors():
             'message': 'Doctor change has been submitted successfully'
         })
     
-@app.route('/admin_avail')
+@app.route('/admin_avail', methods=['POST', 'GET'])
 def admin_avail():
-    changed_day = request.form['admin-day-change']
-    changed_time = request.form['admin-time-change']
-    avail_id = request.form['changed-avail-id']
+    changed_day = request.form['edit-day']
+    changed_time = request.form['edit-time']
+    avail_id = request.form['edited-availid']
     avail_to_change = Availability.query.filter_by(id=avail_id).first()
     if avail_to_change:
         if changed_day:
@@ -773,7 +776,10 @@ def admin_avail():
             avail_to_change.time = changed_time
 
         db.session.commit()
-        return redirect(url_for("admin_homepage"))
+        return jsonify({
+            'success': True,
+            'message': "Availability Update Successfully",
+        })
     
 
 @app.route('/admin_add_user', methods=['POST', 'GET'])
@@ -849,43 +855,54 @@ def admin_add_avail():
 
 @app.route('/admin_delete_user', methods=['POST', 'GET'])
 def admin_delete_user():
-    deleted_user_id = request.form['admin-deleted-user']
+    deleted_user_id = request.form['deleted-userid']
     deleted_user = User.query.filter_by(id=deleted_user_id).first()
     if deleted_user:
         deleted_user.is_deleted = 1
         db.session.commit()
 
-    return redirect(url_for("admin_homepage"))
+    return jsonify({
+        'success': True,
+        'message': "User deleted successfully",
+    })
         
 
 @app.route('/admin_delete_doctor', methods=['POST', 'GET'])
 def admin_delete_doctor():
-    deleted_doctor_id = request.form['admin-deleted-doctor']
+    deleted_doctor_id = request.form['deleted-doctorid']
     deleted_doctor = Doctor.query.filter_by(id=deleted_doctor_id).first()
     if deleted_doctor:
         deleted_doctor.is_active = 0
         db.session.commit()
 
-    return redirect(url_for("admin_homepage"))
+    return jsonify({
+        'success': True,
+        'message': "Doctor deleted successfully",
+
+    })
 
 
 @app.route('/admin_delete_appointment', methods=['POST', 'GET'])
 def admin_delete_appointment():
-    deleted_appoint_id = request.form['admin-deleted-appointment']
+    deleted_appoint_id = request.form['deleted-appointid']
     deleted_booking = Booking.query.filter_by(id=deleted_appoint_id).first()
     if deleted_booking:
         deleted_booking.is_cancelled = 1
         db.session.commit()
-    return redirect(url_for("admin_homepage"))
+    return jsonify({
+        'success': True,
+        'message': "Appointment deleted successfully",
+
+    })
 
 
 @app.route('/admin_appointments', methods=['POST', 'GET'])
 def admin_appointments():
-    changed_patient = request.form['scheduler-name-change']
-    changed_booked_doctor = request.form['booked-doctor-change']
-    changed_date = request.form['booking-date-change']
-    changed_booking_reason = request.form['booking-reason-change']
-    changed_bookingid = request.form['changed-bookingid']
+    changed_patient = request.form['edit-booking-patient']
+    changed_booked_doctor = request.form['edit-booked-doctor']
+    changed_date = request.form['edit-booking-date']
+    changed_booking_reason = request.form['edit-booking-reason']
+    changed_bookingid = request.form['edited-appointid']
 
     changed_booking = Booking.query.filter_by(id=changed_bookingid).first()
     
@@ -902,7 +919,10 @@ def admin_appointments():
             changed_booking.booking_reason = changed_booking_reason
 
         db.session.commit()
-    return redirect(url_for("admin_homepage"))
+    return jsonify ({
+        'success': True,
+        'message': "Appointment change completed successfully.",
+    })
     
 
 @app.route('/admin_add_appointment', methods=['POST', 'GET'])
@@ -968,6 +988,24 @@ def verify_email():
         
         return "User Not Found"
     return "Token Could Not Be Verified."
+
+
+@app.route("/admin_delete_avail", methods=['POST', 'GET'])
+def admin_delete_avail():
+    deleted_avail_id = request.form['deleted-availid']
+    deleted_avail = Availability.query.filter_by(id=deleted_avail_id).first()
+    if deleted_avail:
+        db.session.delete(deleted_avail)
+        db.session.commit()
+    return jsonify ({
+        'success': True,
+        'message': "Availability deleted successfully",
+    })
+    
+
+
+     
+
         
 
 
