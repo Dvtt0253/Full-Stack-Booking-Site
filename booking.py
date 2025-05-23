@@ -304,7 +304,19 @@ def homepage():
         print(e)
     
    
-    doctors = Doctor.query.all()
+    doctors_query = Doctor.query.filter_by(is_active = 1).all()
+    doctors = []
+    for doctor in doctors_query:
+        doctors.append({
+             'id': doctor.id,
+             'doctor_name': doctor.doctor_name,
+             'contact_email': doctor.contact_email,
+             'field': doctor.field,
+             'headshot': doctor.headshot,
+
+        })
+       
+
     doctor_dates = Availability.query.filter_by(is_booked = 0).all()
     avail_dates = []
     for date in doctor_dates:
@@ -347,10 +359,10 @@ def submit_doctor():
 
 @app.route('/submit_booking', methods=['POST', 'GET'])
 def submit_booking():
-    scheduler_name = request.form['scheduler']
-    booking_reason = request.form['booking-reason']
-    booked_doctorid = request.form['booked-doctor']
-    print(f"the booked doctor is: {booked_doctorid} " )
+    scheduler_name = request.form['book-patient-name']
+    booking_reason = request.form['book-reason']
+    booked_doctorid = request.form['chosen-doctor-id']
+   
     requested_doctor = Doctor.query.filter_by(id=booked_doctorid).first()
     booked_doctorname = requested_doctor.doctor_name
     scheduled_time = request.form['scheduled-time']
@@ -375,8 +387,11 @@ def submit_booking():
     db.session.add(new_booking)
     db.session.commit()
 
-    flash("Your Booking has been placed successfully!", category="success")
-    return redirect(url_for("booking_page"))
+    return jsonify ({
+        'success': True,
+        'message': "Your Appointment has been scheduled successfully",
+
+    })
 
 
 
@@ -385,20 +400,41 @@ def submit_booking():
 def booking_page():
     user_id = session['id']
 
-    user_bookings = Booking.query.filter_by(user_id=user_id, is_cancelled=0).all()
+    user_bookings_query = Booking.query.filter_by(user_id=user_id, is_cancelled=0).all()
+    user_bookings = []
+    for booking in user_bookings_query:
+        user_bookings.append({
+            'id': booking.id,
+            'patient_name': booking.scheduler,
+            'booked_doctor': booking.booked_doctor,
+            'booking_reason': booking.booking_reason,
+            'booking_time': booking.scheduled_time,
+            'user_id': booking.user_id,
+        })
 
-    cancelled_bookings = Booking.query.filter_by(user_id=user_id, is_cancelled=1).all()
+
+    cancelled_bookings_query = Booking.query.filter_by(user_id=user_id, is_cancelled=1).all()
+    cancelled_bookings = []
+    for booking in cancelled_bookings_query:
+        cancelled_bookings.append({
+            'id': booking.id,
+            'patient_name': booking.scheduler,
+            'booked_doctor': booking.booked_doctor,
+            'booking_reason': booking.booking_reason,
+            'booking_time': booking.scheduled_time,
+            'user_id': booking.user_id,
+        })
     active_weekdays =[]
     cancelled_weekdays = [] 
     active_times = []
     cancelled_times = []
-    for booking in user_bookings:
+    for booking in user_bookings_query:
         scheduled_time = booking.scheduled_time
         parsed_time = scheduled_time.split()
         active_times.append(parsed_time[2])
         active_weekdays.append(parsed_time[0])
         
-    for booking in cancelled_bookings:
+    for booking in cancelled_bookings_query:
         scheduled_timecan = booking.scheduled_time
         parsed_timecan = scheduled_timecan.split()
         cancelled_times.append(parsed_timecan[2])
@@ -480,7 +516,18 @@ def booking_page():
 
     
    
-    return render_template('bookings.html', bookings=user_bookings, cancelled_bookings=cancelled_bookings, active_dates=active_formatted_dates, cancelled_dates=can_formatted_dates, zip_active = zipped_active, zipped_cancelled=zipped_cancelled)
+    
+    return jsonify ({
+        'success': True,
+        'bookings': user_bookings,
+        'cancelled_bookings': cancelled_bookings,
+        'active_dates': active_formatted_dates,
+        'cancelled_dates': can_formatted_dates,
+        'zip_active': list(zipped_active),
+        'zip_cancelled': list(zipped_cancelled),
+
+
+    })
 
 
 @app.route('/cancel_booking', methods=['POST', 'GET'])
@@ -799,11 +846,12 @@ def admin_add_user():
             })
         
         new_role = request.form['add-role'] or "User"
+        is_verified = 1
        
         
         join_date = datetime.now()
 
-        new_user = User(first_name=new_first_name, last_name=new_last_name, email=new_email, hashed_password=new_password, role=new_role, join_date=join_date)
+        new_user = User(first_name=new_first_name, last_name=new_last_name, email=new_email, hashed_password=new_password, role=new_role, join_date=join_date, is_verified=is_verified)
 
         db.session.add(new_user)
         db.session.commit()
@@ -1001,6 +1049,29 @@ def admin_delete_avail():
         'success': True,
         'message': "Availability deleted successfully",
     })
+
+@app.route('/send_avail', methods=['POST', 'GET'])
+def send_avail():
+    chosen_doctor_id = request.form['booked-id']
+    doctors_avail_query = Availability.query.filter_by(doctor_id = chosen_doctor_id).all()
+    doctors_avail = []
+    for avail in doctors_avail_query:
+        doctors_avail.append({
+            'avail_id': avail.id,
+            'doctor_id': avail.doctor_id,
+            'day': avail.day,
+            'time': avail.time,
+        })
+
+    return jsonify ({
+        'success': True,
+        'avail': doctors_avail,
+
+        
+    })
+
+
+
     
 
 

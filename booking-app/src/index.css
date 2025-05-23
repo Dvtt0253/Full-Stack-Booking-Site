@@ -242,3 +242,8 @@
 .user-attribute-div:hover, .doctor-attribute-div:hover, .appoint-attribute-div:hover, .avail-attribute-div:hover{
     background-color: #e0e0e0;
 }
+.doctor-div{
+    width:fit-content;
+    height: fit-content;
+    margin-bottom: 10vh;
+}

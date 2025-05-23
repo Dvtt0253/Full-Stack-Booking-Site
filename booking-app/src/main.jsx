@@ -7,6 +7,7 @@ import VerifyMessage from './VerifyMessage.jsx';
 import Login from './Login.jsx';
 import UserHomepage from './UserHomepage.jsx';
 import AdminHomepage from './AdminHomepage.jsx';
+import BookingPage from './BookingPage.jsx';
 import App from './App.jsx'
 
 const router = createBrowserRouter([
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
     path: '/admin_homepage',
     element: <AdminHomepage/>
 
+  },
+  {
+    path: '/booking_page',
+    element: <BookingPage/>
   }
 
 ]);
