@@ -532,14 +532,17 @@ def booking_page():
 
 @app.route('/cancel_booking', methods=['POST', 'GET'])
 def cancel_booking():
-    cancelled_booking = request.form['cancelled-booking']
+    cancelled_booking = request.form['cancelled-appoint-id']
     cancel_booking = Booking.query.filter_by(id=cancelled_booking).first()
    
     cancel_booking.is_cancelled = 1
     db.session.commit()
 
-    flash("Your Appointment has been cancelled successfully.", category="success")
-    return redirect(url_for('booking_page'))
+   
+    return jsonify ({
+        'success': True,
+        'message': "Your Appointment was Cancelled Successfully!",
+    })
 
 
 @app.route('/account_management')

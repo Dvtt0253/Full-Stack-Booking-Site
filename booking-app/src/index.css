@@ -63,7 +63,7 @@
     margin-top: 2vh;
     margin-left:2vw;
 }
-.attribute-table{
+.attribute-table, .booking-table{
 
     width:80vw;
     height:fit-content;
@@ -75,7 +75,7 @@
    
 
 }
-.user-attribute-div, .doctor-attribute-div, .appoint-attribute-div, .avail-attribute-div{
+.user-attribute-div, .doctor-attribute-div, .appoint-attribute-div, .avail-attribute-div, .active-booking-div, .cancelled-booking-div{
     width:80vw;
     height:3vw;
     border: 1px solid black;
@@ -89,7 +89,8 @@
    
    
 }
-.attribute-info span{
+
+.attribute-info span, .active-booking-info span, .cancelled-booking-info span{
 
     margin-right:4vw;
 
@@ -246,4 +247,24 @@
     width:fit-content;
     height: fit-content;
     margin-bottom: 10vh;
+}
+
+.cancel-form{
+    width:fit-content;
+    height: fit-content;
+    margin:auto;
+    margin-top:15vh;
+    
+}
+.cancel-form button{
+    width:fit-content;
+    margin-left:15vw;
+    border:none;
+    color:red;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+.cancel-form p{
+    text-align: center;
+    font-weight:bolder
 }
