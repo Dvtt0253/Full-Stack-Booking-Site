@@ -109,6 +109,7 @@ function UserHomepage(){
             document.getElementById("chosen-doctor-photo").src = doctor.headshot;
             document.getElementById('chosen-doctor-name').textContent = doctor.doctor_name;
             document.getElementById('chosen-doctor-email').textContent = doctor.contact_email;
+            document.getElementById('chosen-doctor-photo').src = doctor.headshot;
 
          }
        })
@@ -133,13 +134,24 @@ function UserHomepage(){
 
     return(
         <>
+        <div className="user-nav-div">
+            <div className="user-nav-buttons">
+                <button onClick={() => navigate('/homepage')}>Home</button>
+             <button onClick={() => navigate('/booking_page')}>Appointments</button>
+              <button onClick={() => navigate('/manage_account')}>Account Management</button>
+
+            </div>
+            
+
+        </div>
         <div id="doctor-homepage">
-             <h1>Welcome to BlueTree Health, {firstName} {lastName}</h1>
-        <h2>Meet Your Doctors: </h2>
+             <h1>Welcome to BlueTree Health, {firstName}</h1>
+        
 
         
         {alldoctors.map((doctor) => (
             <div className="doctor-div" id={`doctor-${doctor.id}`} key={doctor.id}>
+                
                 <img alt="doctor-photo" src={doctor.headshot}/>
                 <h2>{`Dr. ${doctor.doctor_name}`}</h2>
                 <p>{doctor.contact_email}</p>
@@ -182,7 +194,7 @@ function UserHomepage(){
                     
                 </select>
                 <input type="hidden" name="chosen-doctor-id" id="chosen-doctor-id"/>
-                <button type="submit">Submit</button>
+                <button type="submit">Schedule</button>
 
 
             </form>

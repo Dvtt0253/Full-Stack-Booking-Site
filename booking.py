@@ -555,27 +555,48 @@ def account_management():
     user_joindate = user_joindate.strftime('%B %d, %Y')
     user_email = current_user.email
     
-    return render_template('account.html', first_name=user_firstname, last_name=user_lastname, join_date=user_joindate, email=user_email)
+    
+    return jsonify ({
+        'success': True,
+        'user_id': user_id,
+        'first_name': user_firstname,
+        'last_name': user_lastname,
+        'join_date': user_joindate,
+        'email': user_email
+
+
+    })
 
 @app.route('/change_email', methods=['POST', 'GET'])
 def change_email():
     user_id = session['id']
-    changed_email = request.form['change-email']
+    changed_email = request.form['user-change-email']
     updated_user = User.query.filter_by(id=user_id).first()
     if updated_user:
-        updated_user.email = changed_email
-        db.session.commit()
-        flash("Your Email has Been Updated Successfully!", category="success")
-        return redirect(url_for("account_management"))
-    flash("An Error Occurred While Attempting to Update Your Email Address. PLease Try Again.", category="error")
-    return redirect(url_for("account_management"))
+        try:
+            updated_user.email = changed_email
+            db.session.commit()
+        except IntegrityError:
+            return jsonify ({
+                'success': False,
+                'message': "Email Already Exists",
+            })
+
+        return jsonify ({
+            'success': True,
+            'message': "Your email has been updated successfully",
+        })
+    return jsonify({
+        'success': False,
+        'message': "An error occurred while attempting to change your email address, please try again.",
+    })
 
 @app.route('/change_password', methods=['POST', 'GET'])
 def change_password():
     user_id = session['id']
-    old_password = request.form['old-password']
-    new_password = request.form['change-pasword']
-    confirmed_change = request.form['confirm-change']
+    old_password = request.form['user-old-password']
+    new_password = request.form['user-new-password']
+    confirmed_change = request.form['confirm-new-password']
     updated_user = User.query.filter_by(id=user_id).first()
     if updated_user:
         try:
@@ -584,11 +605,22 @@ def change_password():
                 new_hashed = ph.hash(new_password)
                 updated_user.hashed_password = new_hashed
                 db.session.commit()
+            else:
+                return jsonify ({
+                    'success': False, 
+                    'message': "Passwords do not match.",
+                })
         except VerifyMismatchError:
-            flash("Entered Password is Incorrect.", category="error")
-            return redirect(url_for("account_management"))
-        flash("Password Has Been Updated Successfully.", category="success")
-        return redirect(url_for("account_management"))
+            return jsonify ({
+                'success': False,
+                'message': "Previous password is incorrect",
+            })
+            
+        
+        return jsonify ({
+            'success': True, 
+            'message': "Your password has been updated successfully",
+        })
     
 @app.route('/delete_account')
 def delete_account():
@@ -611,11 +643,16 @@ def confirm_delete():
                     db.session.delete(booking)
                     db.session.commit()
             except VerifyMismatchError:
-                flash("Incorrect Login Information.", category="error")
-                return redirect(url_for("delete_account"))
-            flash("Your Account has Been Deleted.", category="success")
+                return jsonify ({
+                    'success': False,
+                    'message': "Incorrect Login Information",
+                })
+            
             session.clear()
-            return redirect(url_for("login_page"))
+            return jsonify({
+                'success': True,
+                'message': "Your account has been deleted successfully",
+            })
                 
 
 
@@ -1007,9 +1044,10 @@ def delete_deleted_users():
 @app.route('/logout', methods=['POST', 'GET'])
 def logout():
     session.clear()
-    flash("You have been logged out successfully.", category="success")
-    return redirect(url_for("login_page"))
-
+    return jsonify ({
+        'success': True,
+        'message': "You have been successfully logged out",
+    })
 @app.route('/admin_manage_account')
 def admin_manage_account():
    

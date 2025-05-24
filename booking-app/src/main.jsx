@@ -8,6 +8,8 @@ import Login from './Login.jsx';
 import UserHomepage from './UserHomepage.jsx';
 import AdminHomepage from './AdminHomepage.jsx';
 import BookingPage from './BookingPage.jsx';
+import UserAccountManage from './UserAccountManage.jsx';
+import ConfirmAccountDelete from './ConfirmAccountDelete.jsx';
 import App from './App.jsx'
 
 const router = createBrowserRouter([
@@ -35,6 +37,14 @@ const router = createBrowserRouter([
   {
     path: '/booking_page',
     element: <BookingPage/>
+  },
+  {
+    path:'/manage_account',
+    element: <UserAccountManage/>
+  }, 
+  {
+    path: '/confirm_deletion',
+    element: <ConfirmAccountDelete/>
   }
 
 ]);

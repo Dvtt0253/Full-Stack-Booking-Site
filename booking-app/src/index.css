@@ -70,6 +70,7 @@
     margin:auto;
     margin-top:20vh;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
     
 
    
@@ -83,6 +84,7 @@
     padding-top:2vh;
     padding-bottom:2vh;
     cursor:pointer;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 
 }
 .attribute-info{
@@ -246,7 +248,13 @@
 .doctor-div{
     width:fit-content;
     height: fit-content;
-    margin-bottom: 10vh;
+    margin:auto;
+    text-align: center;
+   
+    
+   
+    
+   
 }
 
 .cancel-form{
@@ -254,17 +262,217 @@
     height: fit-content;
     margin:auto;
     margin-top:15vh;
+    text-align: center;
     
 }
 .cancel-form button{
-    width:fit-content;
-    margin-left:15vw;
+    width:20vw;
+    height: 5vh;
+    margin:4vh auto 0 auto;
+    background-color: #2C3E50;
     border:none;
-    color:red;
+    color:white;
     font-weight: bold;
     font-size: 0.9rem;
+    border-radius:2px;
+    cursor:pointer;
+    
 }
 .cancel-form p{
     text-align: center;
-    font-weight:bolder
+    font-weight:bolder;
+    letter-spacing: 0.6px;
+    font-size: 0.8rem;
+    padding-bottom: 10px;
+
+}
+.user-nav-div{
+    width:100vw;
+    height:5vh;
+    position:fixed;
+    top:0;
+    left:0;
+    background-color: #2C3E50;
+
+
+}
+.user-nav-buttons{
+    width:fit-content;
+    margin:auto;
+}
+.user-nav-buttons button{
+    width: 20vw;
+    height:5vh;
+    background-color: #2C3E50;
+    border:none;
+    color:white;
+    font-weight:600px;
+    cursor:pointer;
+}
+.user-nav-buttons button:hover{
+    background-color:#3B4F65;
+}
+#doctor-homepage{
+    margin-top: 18vh;
+}
+#doctor-homepage h1{
+    text-align: center;
+    padding-bottom:10vh;
+}
+.doctor-div button{
+    width: 30vw;
+    height: 5vh;
+   
+    margin: 2vh auto 15vh auto;
+    border:none;
+    border-radius: 2px;
+    background-color: #2C3E50;
+    color:white;
+    font-weight: bold;
+    letter-spacing: 0.3px;
+    cursor:pointer;
+
+}
+.doctor-div button:hover, .book-form button:hover, .cancel-form button:hover{
+    background-color:#3B4F65;
+}
+.doctor-div img{
+    margin: 0 auto 5vh auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+.doctor-div h2, p{
+    text-align:center;
+    letter-spacing: 0.9px;
+}
+.chosen-doctor-info{
+    width: fit-content;
+    height:fit-content;
+    padding: 10px;
+    margin:10vh auto 3vh auto;
+    text-align: center;
+}
+.chosen-doctor-info img{
+    width:30vw;
+    border:  1px solid #2C3E50;
+  
+}
+.book-form{
+    width:fit-content;
+    height:fit-content;
+    padding:20px;
+    margin:auto;
+    text-align: center;
+    background-color: #e0e0e0;
+
+}
+.book-form input, select{
+    display:block;
+    margin:3vh auto 3vh auto;
+    width:25vw;
+    height:5vh;
+    border-radius:2px;
+    
+}
+.book-form button{
+    width: 20vw;
+    height: 5vh;
+   
+    margin: 2vh auto 3vh auto;
+    border:none;
+    border-radius: 2px;
+    background-color: #2C3E50;
+    color:white;
+    font-weight: bold;
+    letter-spacing: 0.3px;
+    cursor:pointer;
+
+}
+#booking-form{
+    width:fit-content;
+    height: fit-content;
+    padding-top: 3px;
+    padding-left:30px;
+    padding-right:30px;
+  
+    
+    background-color: #e0e0e0;
+    margin:15vh auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    border-radius: 5px;
+}
+.appointments-buttons{
+    width: 20vw;
+    border: none;
+    background-color: white;
+    color:#2C3E50;
+    font-weight: bold;
+   
+    cursor:pointer;
+}
+.appointments-buttons:hover{
+    text-decoration: underline;
+    color: #4F637A;
+}
+.appointments-cancel-button{
+    border:none;
+    background-color: white;
+    color:red;
+    font-weight: bold;
+    font-size: 0.9rem;
+    cursor: pointer;
+    
+
+}
+.appointments-cancel-button:hover{
+    text-decoration: underline;
+    color: #F28B82;
+
+
+}
+.user-account-info{
+    width:fit-content;
+    height:fit-content;
+    text-align: center;
+    margin:auto;
+    padding: 5px;
+}
+.user-account-info p{
+    font-size: 0.8rem;
+}
+.change-email-form{
+    text-align:center;
+    width:100vw;
+    padding: 10px;
+}
+
+.change-email-form input{
+    width:20vw;
+    height:5vh;
+    
+    margin:auto;
+}
+.change-email-form label{
+    padding-right: 5vw;
+}
+.change-email-form button{
+    margin-left: 5vw;
+}
+.black-divider{
+    border-bottom:1px solid black;
+    width: 100vw;
+}
+.change-password-form{
+    text-align:center;
+    width:100vw;
+    padding: 10px;
+
+}
+.change-password-form input{
+    display:block;
+    width: 20vw;
+    height:5vh;
+    margin:auto;
+}
+.change-password-form label{
+    padding-bottom:5px;
 }

@@ -1,9 +1,10 @@
 import {useState, useEffect} from 'react';
-import {navigate} from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function BookingPage(){
     const [zippedCancelled, setZippedCan] = useState([]);
     const [zippedActive, setZippedActive] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(()=>{
         const fetchAppoints = async () => {
@@ -104,18 +105,29 @@ function BookingPage(){
         fetchAppointCancel(formData);
     }
 
-    return(<>
+    return(
+    <>
+
+         <div className="user-nav-div">
+            <div className="user-nav-buttons">
+                <button onClick={() => navigate('/homepage')}>Home</button>
+                <button onClick={() => navigate('/booking_page')}>Appointments</button>
+                <button onClick={() => navigate('/manage_account')}>Account Management</button>
+
+            </div>
+          
+         </div>
 
     <div className="booking-table">
-        <button onClick={showActiveBookings}>Active Appointments</button>
-        <button onClick={showCancelledBookings}>Cancelled Appointments</button>
+        <button className="appointments-buttons" onClick={showActiveBookings}>Active Appointments</button>
+        <button className="appointments-buttons" onClick={showCancelledBookings}>Cancelled Appointments</button>
 
     <div id="user-active-bookings" className="user-active-bookings">
         {zippedActive.map(([appoint, date]) => (
             <div  key={appoint.id} className="active-booking-div" id={`appoint-${appoint.id}`}>
                 <div className="active-booking-info">
                     
-                    <p> <span>Dr. {appoint.booked_doctor}</span> <span>{appoint.booking_reason}</span><span>{date}</span><span><button onClick={()=> cancelAppoint(appoint.id)}>Cancel</button></span></p>
+                    <p> <span>Dr. {appoint.booked_doctor}</span> <span>{appoint.booking_reason}</span><span>{date}</span><span><button className="appointments-cancel-button" onClick={()=> cancelAppoint(appoint.id)}>Cancel</button></span></p>
                     
 
                   
@@ -153,14 +165,15 @@ function BookingPage(){
         <form onSubmit={handleCancel}>
             <input type="hidden" id="cancelled-appoint-id" name="cancelled-appoint-id"/>
             <p>By Proceeding, You are agreeing to cancel this appointment.</p>
-            <p>Please note, that this action is irreversible.</p>
+            <p>Please note, this action is irreversible.</p>
             <button type="submit">Cancel</button>
 
         </form>
            
 
         </div>
-    </>);
+    </>
+        );
 
 }
 export default BookingPage
