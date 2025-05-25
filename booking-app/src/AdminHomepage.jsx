@@ -2,6 +2,8 @@ import {useEffect, useState} from 'react'
 import { useNavigate } from 'react-router-dom';
 import doctorLogo from './assets/doctor-logo.png';
 import patientLogo from './assets/patient-logo.png';
+import AdminProfilePic from './assets/admin-profile.png';
+import NavLogo from './NavLogo.jsx';
 
 
 function AdminHomepage(){
@@ -747,12 +749,15 @@ function AdminHomepage(){
         <body className="admin-body">
 
         <div className="admin-navbar">
+            <NavLogo size={'2vw'}/>
             <div className="admin-navbuttons">
+                <img className="admin-profile-pic" onClick={() => navigate('/admin_account_management')} src={AdminProfilePic}/>
                 <button onClick={showHome}>Home</button>
                 <button onClick={showUsers}>Users</button>
                 <button onClick={showDoctors}>Doctors</button>
                 <button onClick={showAppoints}>Appointments</button>
                 <button onClick={showAvail}>Availability</button>
+               
 
             </div>
             
@@ -1107,7 +1112,7 @@ function AdminHomepage(){
 
                 </div>
                 <div style={{display: 'none'}} className="add-forms" id="add-avail-form">
-                    <button className="add-attribute-buttons" onClick={cancelAddAvail} id="cancel-avail-add" className="cancel-add-button" >Cancel</button>
+                    <button onClick={cancelAddAvail} id="cancel-avail-add" className="cancel-add-button" >Cancel</button>
                     <form onSubmit={handleAvailSubmit}>
                         <h3>Add Availability</h3>
                         <label htmlFor="add-availdoctor">Doctor ID: </label>

@@ -2,6 +2,7 @@
 import React from "react";
 import {useState} from "react";
 import { useNavigate } from "react-router-dom";
+import NewLogo from './NewLogo.jsx';
 
 
 function CreateAccount(){
@@ -61,7 +62,10 @@ function CreateAccount(){
     
 
     return(
-        <div>
+
+        <>
+        <NewLogo/>
+        <div className="create-account-form">
             <h2>Create An Account</h2>
         <form onSubmit={handleSubmit}>
             <label htmlFor="first-name">First Name:</label>
@@ -74,12 +78,16 @@ function CreateAccount(){
             <input type="password" id="password" name="password" required/>
             <label htmlFor="confirm-password">Confirm Password:</label>
             <input type="password" id="confirm-password" name="confirm-password" required/>
+            
+            <p>Already Have an Account? <a href="#" onClick={()=>navigate('/login_page')}>Sign In Here</a></p>
             <button type="submit">Sign Up</button>
 
         </form>
            
 
         </div>
+        </>
+        
     );
 
 }

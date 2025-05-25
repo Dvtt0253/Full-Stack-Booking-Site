@@ -1,5 +1,7 @@
 import {useEffect, useState} from 'react';
 import { useNavigate} from 'react-router-dom';
+import NavLogo from './NavLogo.jsx';
+
 
 
 
@@ -135,6 +137,11 @@ function UserHomepage(){
     return(
         <>
         <div className="user-nav-div">
+
+            <NavLogo/>
+
+            
+
             <div className="user-nav-buttons">
                 <button onClick={() => navigate('/homepage')}>Home</button>
              <button onClick={() => navigate('/booking_page')}>Appointments</button>

@@ -1,13 +1,16 @@
 import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
+import DeleteAccount from './DeleteAccount.jsx';
+import NewLogo from './NewLogo.jsx';
 
-function UserAccountManage(){
+function UserAccountManage({showDelete = true, is_user = true, homepage_path='/homepage'}){
     const [firstName, setFirstName] = useState();
     const [lastName, setLastName] = useState();
     const [joinDate, setJoinDate] = useState();
     const [email, setEmail] = useState();
     const[userId, setUserId] = useState();
     const navigate = useNavigate();
+   
 
     useEffect(() => {
 
@@ -125,16 +128,28 @@ function UserAccountManage(){
 
     return(
         <>
+
+        <a href="#" onClick={() => navigate(homepage_path)} >
+            <NewLogo size = {70}/>
+
+        </a>
+        
+
         <div className="user-account-info">
+        
             <h3>{firstName} {lastName}</h3>
-            <p>Patient since {joinDate}</p>
+            {is_user && <p>Patient Since {joinDate}</p>}
+            
             <p>{email}</p>
 
         </div>
+            
+
+        
         <div className="black-divider"></div>
         <div className="change-email-form">
             <form onSubmit={handleEmailChange}>
-                <label for="user-change-email">Change your Email Address</label>
+                <label for="user-change-email">Change Email Address</label>
                 <input type="email" id="user-change-email" name="user-change-email" required/>
                 <button type="submit">Change Email</button>
             </form>
@@ -143,7 +158,7 @@ function UserAccountManage(){
          <div className="black-divider"></div>
         <div className ="change-password-form">
             <form onSubmit={handlePasswordChange}>
-                <h2>Change Your Password</h2>
+                <h2>Change Password</h2>
                 <label for="user-old-password">Previous Password: </label>
                 <input type="password" id="user-old-password" name="user-old-password" required/>
                 <label for="user-new-password">New Password: </label>
@@ -158,19 +173,16 @@ function UserAccountManage(){
         <div className="logout">
         <form onSubmit={handleLogOut}>
             <input type="hidden" id="logout-userid" name="logout-userid" value={userId}/>
-            <button type="submit">Log Out</button>
+            <button type="submit">LogOut</button>
 
         </form>
             
 
         </div>
          <div className="black-divider"></div>
-        <div className="delete-account">
-            <button onClick={() => navigate('/confirm_deletion')}> Delete Your Account</button>
-
-            
-
-        </div>
+          {showDelete && <DeleteAccount/> }
+        
+        
         </>
     );
 

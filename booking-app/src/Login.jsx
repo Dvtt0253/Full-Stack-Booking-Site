@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import BlueLogo from './BlueLogo.jsx'
 
 function Login() {
 
@@ -53,17 +54,26 @@ function Login() {
     }
 
     return(
-        <div>
-            <form onSubmit={handleSubmit}>
-                <label htmlFor="login-email">Email:</label>
-                <input type="email" id="login-email" name="login-email" required/>
-                <label htmlFor="login-password">Password:</label>
-                <input type="password" id="login-password" name="login-password" required/>
-                <button type="submit">Log In</button>
-               
+            <>
+            
+                <BlueLogo/>
+            <div className="login-form">
+                    <form onSubmit={handleSubmit}>
+                        <h2>Login</h2>
+                        <label htmlFor="login-email">Email:</label>
+                        <input type="email" id="login-email" name="login-email" required/>
+                        <label htmlFor="login-password">Password:</label>
+                        <input type="password" id="login-password" name="login-password" required/>
+                        <button type="submit">Log In</button>
+                    
 
-            </form>
-        </div>
+                    </form>
+                </div>
+
+            
+            
+            </>
+        
     );
 
 }

@@ -1,3 +1,9 @@
+button{
+    cursor: pointer;
+}
+input{
+    background-color: #e0e0e0;
+}
 .admin-body{
     width:100vw;
     height:100vh;
@@ -21,11 +27,12 @@
 }
 .admin-navbuttons button{
     border:none;
-    width: 15vw;
+    width: 14vw;
     height:2vh;
     color:white;
     background-color: #4B4B4B;
     cursor:pointer;
+    
 }
 .admin-navbuttons button:hover{
     background-color:#5A5A5A;
@@ -430,36 +437,56 @@
 
 }
 .user-account-info{
-    width:fit-content;
-    height:fit-content;
-    text-align: center;
-    margin:auto;
-    padding: 5px;
+  display: block; 
+  width: 100vw;
+  height: fit-content;
+
+  margin: 0 auto;
+  padding: 0;
+  
+  
 }
 .user-account-info p{
-    font-size: 0.8rem;
+    text-align: center;
 }
+.user-account-info h3{
+    text-align: center;
+}
+
+
+
 .change-email-form{
     text-align:center;
     width:100vw;
+    margin:auto;
     padding: 10px;
 }
 
 .change-email-form input{
+    display:block;
     width:20vw;
-    height:5vh;
+    height:3vh;
     
-    margin:auto;
+    margin: 3vh auto;
 }
-.change-email-form label{
-    padding-right: 5vw;
-}
+
+  
+
 .change-email-form button{
-    margin-left: 5vw;
+    
+    width:15vw;
+    border:none;
+    border-radius: 2px;
+    background-color: #2C3E50;
+    color:white;
+    padding:8px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
 }
 .black-divider{
-    border-bottom:1px solid black;
-    width: 100vw;
+ border-bottom: 1px solid #ccc;
+  margin: 2rem auto;
+  max-width: 600px;
 }
 .change-password-form{
     text-align:center;
@@ -470,9 +497,142 @@
 .change-password-form input{
     display:block;
     width: 20vw;
-    height:5vh;
-    margin:auto;
+    height:3vh;
+    margin:3vh auto;
+    
 }
 .change-password-form label{
-    padding-bottom:5px;
+ letter-spacing: 0.5px;
 }
+.change-password-form button{
+    width:15vw;
+    border:none;
+    border-radius: 2px;
+    background-color: #2C3E50;
+    color:white;
+    padding:10px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    margin-top: 3vh;
+    cursor:point;
+}
+
+.logout{
+    width:100vw;
+    margin:auto;
+    text-align: center;
+    padding: 0
+}
+.logout button{
+    display:block;
+    width: 12vw;
+    margin: 0 auto;
+    border:none;
+    height: 5vh;
+    background-color:white;
+    font-weight:bold;
+    font-size: 1.3rem;
+    cursor:pointer;
+    color: #2C3E50;
+    box-sizing: border-box;
+    padding: 0;
+   
+    
+}
+.logout button:hover, .delete-account button:hover{
+    text-decoration: underline;
+    color: #4F637A
+}
+.delete-account{
+    width:100vw;
+    margin:auto;
+    text-align: center;
+   
+
+}
+.delete-account button{
+     width: 30vw;
+    margin:auto;
+    border:none;
+    height: 5vh;
+    background-color:white;
+    font-weight:bold;
+    font-size: 1.3rem;
+    cursor:pointer;
+    color: #2C3E50;
+
+}
+.nav-logo{
+    position:fixed;
+    top:0;
+    left:2vw;
+    width: 3.37vw;
+
+
+}
+.login-form{
+    width:fit-content;
+    height:fit-content;
+    margin:auto;
+    text-align: center;
+    margin-top: 10vh;
+    letter-spacing: 0.5px;
+}
+.login-form input{
+    display:block;
+    margin: 3vh auto;
+    width: 20vw;
+    height: 5vh;
+    background-color: #e0e0e0;
+
+}
+.login-form button, .create-account-form button{
+    width: 20vw;
+    height: 5vh;
+   
+    margin: 4.5vh auto 3vh auto;
+    border:none;
+    border-radius: 5px;
+    background-color: #2C3E50;
+    color:white;
+    font-weight: bold;
+    letter-spacing: 0.3px;
+    cursor:pointer;
+    
+}
+.Blue-Logo{
+    position: absolute;
+    top:0;
+    left: 2vw;
+    width: 10vw;
+}
+.create-account-form{
+    width: fit-content;
+    height: fit-content;
+    margin:auto;
+    text-align: center;
+    margin-top: 10vh;
+    letter-spacing: 0.5px;
+}
+   
+
+
+.create-account-form input{
+    display: block;
+    margin: 3vh auto;
+    width: 20vw;
+    height: 5vh;
+    background-color: #e0e0e0;
+}
+.create-account-form p{
+    text-align: center;
+}
+.admin-profile-pic{
+    position: fixed;
+    top:5vh;
+    right: 1vw;
+    width:5vw;
+    cursor:pointer;
+
+}
+
