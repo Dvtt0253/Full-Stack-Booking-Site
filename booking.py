@@ -160,6 +160,25 @@ def send_verification_email(html_temp, receiver, subject, token):
     except Exception as e:
         print(f"Error While Sending Email.{e}")
 
+def send_confirmation_email(html_temp, receiver, subject):
+    try:
+        msg = MIMEMultipart()
+        msg['From'] = sender_email
+        msg['To'] = receiver
+        msg['Subject'] = subject
+        html_content = html_temp
+        msg.attach(MIMEText(html_content, 'html'))
+
+        with smtplib.SMTP(SMTP_SERVER,SMTP_PORT) as server:
+            server.starttls()
+            server.login(sender_email, email_password)
+            server.sendmail(sender_email, receiver, msg.as_string())
+    except Exception as e:
+        print(f"Error While Sending Email.{str(e)}")
+
+
+
+
 
 
 
@@ -368,10 +387,35 @@ def submit_booking():
     scheduled_time = request.form['scheduled-time']
 
     placed_date = datetime.now()
+    formatted_placed_date = placed_date.strftime('%B %d, %Y')
     user_id = session['id']
     parsed_time = scheduled_time.split()
     print(parsed_time)
     booked_doctordates = Availability.query.filter_by(doctor_id=booked_doctorid).all()
+    day_map = {
+        'Monday': 0,
+        'Tuesday':1,
+        'Wednesday':2,
+        'Thursday': 3,
+        'Friday': 4,
+        'Saturday': 5,
+        'Sunday': 6
+        
+        
+    }
+    current_day = datetime.now()
+    current_weekday = current_day.weekday()
+    scheduled_weekday = day_map[parsed_time[0]]
+    if current_weekday <= scheduled_weekday:
+            difference = scheduled_weekday - current_weekday
+    else:
+            difference = 7 - (current_weekday - scheduled_weekday)
+
+    scheduled_date = current_day + timedelta(days=difference)
+    formatted_scheduled_date = f"{scheduled_date.strftime('%B %d, %Y')} at {parsed_time[2]} "
+        
+
+
     
    # for date in booked_doctordates:
 
@@ -386,6 +430,9 @@ def submit_booking():
     new_booking = Booking(booking_reason=booking_reason, scheduled_time=scheduled_time, booking_placed=placed_date, booked_doctor=booked_doctorname, booked_doctorid=booked_doctorid, scheduler=scheduler_name, user_id=user_id)
     db.session.add(new_booking)
     db.session.commit()
+    html_content = render_template('booking_confirm_email.html', date_placed=formatted_placed_date, doctor_name=booked_doctorname, scheduled_time=formatted_scheduled_date, first_name=session['first_name'], last_name=session['last_name'])
+    subject =f"Your Appointment Was Scheduled Successfully, {session['first_name']}"
+    send_confirmation_email(html_content, session['email'], subject)
 
     return jsonify ({
         'success': True,
@@ -534,9 +581,41 @@ def booking_page():
 def cancel_booking():
     cancelled_booking = request.form['cancelled-appoint-id']
     cancel_booking = Booking.query.filter_by(id=cancelled_booking).first()
+    scheduled_time = cancel_booking.scheduled_time
+    parsed_time = scheduled_time.split()
+
+    day_map = {
+        'Monday': 0,
+        'Tuesday':1,
+        'Wednesday':2,
+        'Thursday': 3,
+        'Friday': 4,
+        'Saturday': 5,
+        'Sunday': 6
+        
+        
+    }
+    current_day = datetime.now()
+    current_weekday = current_day.weekday()
+    scheduled_weekday = day_map[parsed_time[0]]
+    if current_weekday <= scheduled_weekday:
+            difference = scheduled_weekday - current_weekday
+    else:
+            difference = 7 - (current_weekday - scheduled_weekday)
+
+    scheduled_date = current_day + timedelta(days=difference)
+    formatted_scheduled_date = f"{scheduled_date.strftime('%B %d, %Y')} at {parsed_time[2]} "
+        
+
+
    
     cancel_booking.is_cancelled = 1
     db.session.commit()
+
+    html_content = render_template('booking_cancel_email.html', doctor_name=cancel_booking.booked_doctor, scheduled_time=formatted_scheduled_date, first_name=session['first_name'], last_name=session['last_name'])
+    subject =f"Your Appointment With Dr. {cancel_booking.booked_doctor} Was Cancelled"
+    send_confirmation_email(html_content, session['email'], subject)
+
 
    
     return jsonify ({
@@ -576,11 +655,16 @@ def change_email():
         try:
             updated_user.email = changed_email
             db.session.commit()
+           
+
         except IntegrityError:
             return jsonify ({
                 'success': False,
                 'message': "Email Already Exists",
             })
+        html_content = render_template('email_change_confirm.html', first_name=session['first_name'], last_name=session['last_name'])
+        subject =f"Your Email Was Change Successfully, {session['first_name']}"
+        send_confirmation_email(html_content, changed_email, subject)
 
         return jsonify ({
             'success': True,
@@ -616,7 +700,9 @@ def change_password():
                 'message': "Previous password is incorrect",
             })
             
-        
+        html_content = render_template('password_change_confirm.html', first_name=session['first_name'], last_name=session['last_name'])
+        subject =f"Your Password Was Change Successfully, {session['first_name']}"
+        send_confirmation_email(html_content, session['email'], subject)
         return jsonify ({
             'success': True, 
             'message': "Your password has been updated successfully",
@@ -647,7 +733,9 @@ def confirm_delete():
                     'success': False,
                     'message': "Incorrect Login Information",
                 })
-            
+            html_content = render_template('delete_account_confirm.html', first_name=session['first_name'], last_name=session['last_name'])
+            subject =f"We're Sorry to See You Go, {session['first_name']}"
+            send_confirmation_email(html_content, session['email'], subject)
             session.clear()
             return jsonify({
                 'success': True,
