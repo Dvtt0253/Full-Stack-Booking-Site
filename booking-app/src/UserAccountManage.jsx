@@ -15,7 +15,7 @@ function UserAccountManage({showDelete = true, is_user = true, homepage_path='/h
    
 
     useEffect(() => {
-        console.log(`Csrf Token: ${csrf_token.csrfToken}`);
+       
 
         const fetchUserData = async ()=>{
             try{
