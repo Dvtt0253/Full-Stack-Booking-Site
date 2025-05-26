@@ -13,6 +13,7 @@ import dotenv
 import string
 from flask_cors import CORS
 from flask_session import Session
+import flask_firewall
 
 
 
@@ -31,6 +32,9 @@ dotenv.load_dotenv()
 
 
 app = Flask(__name__)
+
+firewall = flask_firewall.Firewall(60, 60)
+
 
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SESSION_PERMANENT'] = False  
@@ -186,23 +190,53 @@ def send_confirmation_email(html_temp, receiver, subject):
 
 
 
-@app.route('/')
-def root():
-    return redirect(url_for('signup'))
 
-
-@app.route('/signup')
-def signup():
-    return render_template('signup.html')
 
 @app.route('/create_account', methods=['POST', 'GET'])
 def create_account():
+
+    if firewall.rate_limiter() == 429:
+        return jsonify ({
+
+            'status': 429,
+            'message': "Too Many Requests."
+        })
   
-    first_name = request.form['first-name']
-    last_name = request.form['last-name']
-    email = request.form['email'].lower()
-    password = request.form['password']
-    confirm_password = request.form['confirm-password']
+    first_name = firewall.santitize_input(request.form['first-name'])
+    if firewall.identify_payloads(first_name) == 403:
+        return jsonify({
+            'status':403,
+            'offense': "Payloads",
+            'message': "Malicious payloads detected",
+        })
+    last_name = firewall.santitize_input(request.form['last-name'])
+    if firewall.identify_payloads(last_name) == 403:
+        return jsonify({
+            'status':403,
+            'offense': "Payloads",
+            'message': "Malicious payloads detected",
+        })
+    email = firewall.santitize_input(request.form['email'].lower())
+    if firewall.identify_payloads(email) == 403:
+        return jsonify({
+            'status':403,
+            'offense': "Payloads",
+            'message': "Malicious payloads detected",
+        })
+    password = firewall.santitize_input(request.form['password'])
+    if firewall.identify_payloads(password) == 403:
+        return jsonify({
+            'status':403,
+            'offense': "Payloads",
+            'message': "Malicious payloads detected",
+        })
+    confirm_password = firewall.santitize_input(request.form['confirm-password'])
+    if firewall.identify_payloads(confirm_password) == 403:
+        return jsonify({
+            'status':403,
+            'offense': "Payloads",
+            'message': "Malicious payloads detected",
+        })
     if password == confirm_password:
 
         hashed_password = ph.hash(password)
@@ -219,6 +253,7 @@ def create_account():
        
     except IntegrityError:
        return jsonify({
+           'status': 400,
            'success':False,
            'message': "User Already Exists."
            
@@ -238,6 +273,7 @@ def create_account():
   
 
     return jsonify({
+        'status': 200,
         'success':True,
         'message':"Account Created Successfully Please verify Your Email Address.",
         'token' : verification_token
@@ -245,21 +281,38 @@ def create_account():
         
     }), 200
 
-@app.route('/verify_message')
-def verify_message():
-    return render_template("verify_disclaimer.html")
-
-
-
-@app.route('/login_page')
-def login_page():
-    return render_template('login.html')
 
 
 @app.route('/login_auth', methods=['POST', 'GET'])
 def login_auth():
-    email = request.form['login-email'].lower()
-    password = request.form['login-password']
+
+    if firewall.rate_limiter() == 429:
+        return jsonify({
+            'status': 429,
+            'message': "Too Many Login Attempts",
+        })
+
+    if firewall.login_limiter(5, 60) == 403:
+        return jsonify({
+            'status': 403,
+            'offense': "Login Attempts",
+            'message': "Too many Login attempts",
+
+        })
+    email = firewall.santitize_input(request.form['login-email'].lower())
+    if firewall.identify_payloads(email) == 403:
+        return jsonify({
+            'status':403,
+            'offense': "Payloads",
+            'message': "Malicious payloads detected",
+        })
+    password = firewall.santitize_input(request.form['login-password'])
+    if firewall.identify_payloads(password) == 403:
+        return jsonify({
+            'status':403,
+            'offense': "Payloads",
+            'message': "Malicious payloads detected",
+        })
 
     returning_user = User.query.filter_by(email=email, is_deleted=0).first()
     if returning_user:
@@ -280,6 +333,7 @@ def login_auth():
             session['email'] = returning_user.email
             session['role'] = returning_user.role
             session['is_deleted'] = returning_user.is_deleted
+            session['csrf_token'] = firewall.generate_CSRF_Token(32)
             
 
             
@@ -287,9 +341,11 @@ def login_auth():
            
 
             return jsonify({
+                'status': 200,
                 'Role': returning_user.role,
                 'success': True,
                 'message': "User Login Successful",
+                'session_csrf': session['csrf_token'],
                    
 
 
@@ -300,6 +356,7 @@ def login_auth():
         else:
             
             return jsonify({
+                'status': 400,
                 'success':False,
                 'message': 'Please Verify Your Email Address'
 
@@ -311,12 +368,20 @@ def login_auth():
     else:
         
         return jsonify({
+            'status': 400,
             'success': False,
             'message': 'Entered Credentials Does Not Match Our Records',
 
         })
 @app.route('/homepage')
+    
+        
 def homepage():
+    if firewall.rate_limiter() == 429:
+        return jsonify({
+            'status': 429,
+            'message': "Too Many Requests",
+        })
     try: 
         print(session)
     except Exception as e:
@@ -342,6 +407,7 @@ def homepage():
         avail_dates.append(date)
 
     return jsonify({
+        'status': 200,
         'success':True,
         'first_name': session['first_name'],
         'last_name': session['last_name'],
@@ -356,7 +422,7 @@ def homepage():
 
 @app.route('/submit_doctor', methods=['POST', 'GET'])
 def submit_doctor():
-    chosen_doctorid = request.form['chosen-doctor']
+    chosen_doctorid = firewall.santitize_input(request.form['chosen-doctor'])
     print(f"The chosen doctor is: {chosen_doctorid}")
     doctor_dates = Availability.query.filter_by(doctor_id=chosen_doctorid).all()
     avail_dates = []
@@ -378,13 +444,42 @@ def submit_doctor():
 
 @app.route('/submit_booking', methods=['POST', 'GET'])
 def submit_booking():
-    scheduler_name = request.form['book-patient-name']
-    booking_reason = request.form['book-reason']
-    booked_doctorid = request.form['chosen-doctor-id']
+    if firewall.rate_limiter() == 429:
+        return jsonify ({
+            'status': 429,
+            'message': "Too Many Requests", 
+        })
+    scheduler_name = firewall.santitize_input(request.form['book-patient-name'])
+    if firewall.identify_payloads(scheduler_name) == 403:
+        return jsonify({
+            'status':403,
+            'offense': "Payloads",
+            'message': "Malicious payloads detected",
+        })
+    booking_reason = firewall.santitize_input(request.form['book-reason'])
+    if firewall.identify_payloads(booking_reason) == 403:
+        return jsonify({
+            'status':403,
+            'offense': "Payloads",
+            'message': "Malicious payloads detected",
+        })
+    booked_doctorid = firewall.santitize_input(request.form['chosen-doctor-id'])
+    if firewall.identify_payloads(booked_doctorid) == 403:
+        return jsonify({
+            'status':403,
+            'offense': "Payloads",
+            'message': "Malicious payloads detected",
+        })
    
     requested_doctor = Doctor.query.filter_by(id=booked_doctorid).first()
     booked_doctorname = requested_doctor.doctor_name
-    scheduled_time = request.form['scheduled-time']
+    scheduled_time = firewall.santitize_input(request.form['scheduled-time'])
+    if firewall.identify_payloads(scheduled_time) == 403:
+        return jsonify({
+            'status':403,
+            'offense': "Payloads",
+            'message': "Malicious payloads detected",
+        })
 
     placed_date = datetime.now()
     formatted_placed_date = placed_date.strftime('%B %d, %Y')
@@ -435,6 +530,7 @@ def submit_booking():
     send_confirmation_email(html_content, session['email'], subject)
 
     return jsonify ({
+        'status': 200,
         'success': True,
         'message': "Your Appointment has been scheduled successfully",
 
@@ -445,6 +541,11 @@ def submit_booking():
 
 @app.route('/booking_page')
 def booking_page():
+    if firewall.rate_limiter() == 429:
+        return jsonify({
+            'status': 429,
+            'message': "Too Many Requests",
+        })
     user_id = session['id']
 
     user_bookings_query = Booking.query.filter_by(user_id=user_id, is_cancelled=0).all()
@@ -579,6 +680,11 @@ def booking_page():
 
 @app.route('/cancel_booking', methods=['POST', 'GET'])
 def cancel_booking():
+    if firewall.rate_limiter() == 429:
+        return jsonify ({
+            'status':429,
+            'message': "Too Many Requests",
+        })
     cancelled_booking = request.form['cancelled-appoint-id']
     cancel_booking = Booking.query.filter_by(id=cancelled_booking).first()
     scheduled_time = cancel_booking.scheduled_time
@@ -619,6 +725,7 @@ def cancel_booking():
 
    
     return jsonify ({
+        'status': 200,
         'success': True,
         'message': "Your Appointment was Cancelled Successfully!",
     })
@@ -626,6 +733,11 @@ def cancel_booking():
 
 @app.route('/account_management')
 def account_management():
+    if firewall.rate_limiter() == 429:
+        return jsonify ({
+            'status':429,
+            'message': "Too Many Requests",
+        })
     user_id = session['id']
     current_user = User.query.filter_by(id=user_id).first()
     user_firstname = current_user.first_name
@@ -636,6 +748,7 @@ def account_management():
     
     
     return jsonify ({
+        'status': 200,
         'success': True,
         'user_id': user_id,
         'first_name': user_firstname,
@@ -648,8 +761,13 @@ def account_management():
 
 @app.route('/change_email', methods=['POST', 'GET'])
 def change_email():
+    if firewall.rate_limiter() == 429:
+        return jsonify ({
+            'status':429,
+            'message': "Too Many Requests",
+        })
     user_id = session['id']
-    changed_email = request.form['user-change-email']
+    changed_email = firewall.santitize_input(request.form['user-change-email'])
     updated_user = User.query.filter_by(id=user_id).first()
     if updated_user:
         try:
@@ -659,6 +777,7 @@ def change_email():
 
         except IntegrityError:
             return jsonify ({
+                'status': 400,
                 'success': False,
                 'message': "Email Already Exists",
             })
@@ -667,6 +786,7 @@ def change_email():
         send_confirmation_email(html_content, changed_email, subject)
 
         return jsonify ({
+            'status': 400,
             'success': True,
             'message': "Your email has been updated successfully",
         })
@@ -677,10 +797,33 @@ def change_email():
 
 @app.route('/change_password', methods=['POST', 'GET'])
 def change_password():
+    if firewall.rate_limiter() == 429:
+        return jsonify ({
+            'status':429,
+            'message': "Too Many Requests",
+        })
     user_id = session['id']
-    old_password = request.form['user-old-password']
-    new_password = request.form['user-new-password']
-    confirmed_change = request.form['confirm-new-password']
+    old_password = firewall.santitize_input(request.form['user-old-password'])
+    if firewall.identify_payloads(old_password) == 403:
+        return jsonify({
+            'status':403,
+            'offense': "Payloads",
+            'message': "Malicious payloads detected",
+        })
+    new_password = firewall.santitize_input(request.form['user-new-password'])
+    if firewall.identify_payloads(new_password) == 403:
+        return jsonify({
+            'status':403,
+            'offense': "Payloads",
+            'message': "Malicious payloads detected",
+        })
+    confirmed_change = firewall.santitize_input(request.form['confirm-new-password'])
+    if firewall.identify_payloads(confirmed_change) == 403:
+        return jsonify({
+            'status':403,
+            'offense': "Payloads",
+            'message': "Malicious payloads detected",
+        })
     updated_user = User.query.filter_by(id=user_id).first()
     if updated_user:
         try:
@@ -708,15 +851,29 @@ def change_password():
             'message': "Your password has been updated successfully",
         })
     
-@app.route('/delete_account')
-def delete_account():
-    return render_template("delete_account.html")
 
 @app.route('/confirm_delete', methods=['POST', 'GET'])
 def confirm_delete():
+    if firewall.rate_limiter() == 429:
+        return jsonify ({
+            'status':429,
+            'message': "Too Many Requests",
+        })
     user_id = session['id']
-    email = request.form['delete-email']
-    password = request.form['delete-password']
+    email = firewall.santitize_input(request.form['delete-email'])
+    if firewall.identify_payloads(email) == 403:
+        return jsonify({
+            'status':403,
+            'offense': "Payloads",
+            'message': "Malicious payloads detected",
+        })
+    password = firewall.santitize_input(request.form['delete-password'])
+    if firewall.identify_payloads(password) == 403:
+        return jsonify({
+            'status':403,
+            'offense': "Payloads",
+            'message': "Malicious payloads detected",
+        })
     deleted_user = User.query.filter_by(id=user_id).first()
     if deleted_user:
         if deleted_user.email == email:
@@ -764,6 +921,11 @@ def add_admin():
 
 @app.route('/admin_homepage')
 def admin_homepage():
+    if firewall.rate_limiter() == 429:
+        return jsonify ({
+            'status':429,
+            'message': "Too Many Requests",
+        })
     active_users_query = User.query.filter_by(is_deleted=0).all()
     deleted_users_query = User.query.filter_by(is_deleted=1).all()
     deleted_users = []
@@ -883,11 +1045,46 @@ def admin_homepage():
 
 @app.route('/admin_users', methods=['POST', 'GET'])
 def admin_users():
-    changed_first = request.form['edit-firstname']
-    changed_last = request.form['edit-lastname']
-    changed_email = request.form['edit-user-email']
-    changed_role = request.form['edit-role']
-    user_id = request.form['edited-userid']
+    if firewall.rate_limiter() == 429:
+        return jsonify ({
+            'status':429,
+            'message': "Too Many Requests",
+        })
+    changed_first = firewall.santitize_input(request.form['edit-firstname'])
+    if firewall.identify_payloads(changed_first) == 403:
+        return jsonify({
+            'status':403,
+            'offense': "Payloads",
+            'message': "Malicious payloads detected",
+        })
+    changed_last = firewall.santitize_input(request.form['edit-lastname'])
+    if firewall.identify_payloads(changed_last) == 403:
+        return jsonify({
+            'status':403,
+            'offense': "Payloads",
+            'message': "Malicious payloads detected",
+        })
+    changed_email = firewall.santitize_input(request.form['edit-user-email'])
+    if firewall.identify_payloads(changed_email) == 403:
+        return jsonify({
+            'status':403,
+            'offense': "Payloads",
+            'message': "Malicious payloads detected",
+        })
+    changed_role = firewall.santitize_input(request.form['edit-role'])
+    if firewall.identify_payloads(changed_role) == 403:
+        return jsonify({
+            'status':403,
+            'offense': "Payloads",
+            'message': "Malicious payloads detected",
+        })
+    user_id = firewall.santitize_input(request.form['edited-userid'])
+    if firewall.identify_payloads(user_id) == 403:
+        return jsonify({
+            'status':403,
+            'offense': "Payloads",
+            'message': "Malicious payloads detected",
+        })
    
 
     user_to_change = User.query.filter_by(id=user_id).first()
@@ -917,11 +1114,46 @@ def admin_users():
 
 @app.route('/admin_doctors', methods=['POST', 'GET'])
 def admin_doctors():
-    changed_name = request.form['edit-doctor-name']
-    changed_contact = request.form['edit-doctor-email']
-    changed_field = request.form['edit-doctor-field']
-    changed_photo = request.form['edit-doctor-photo']
-    doctor_id = request.form['edited-doctorid']
+    if firewall.rate_limiter() == 429:
+        return jsonify ({
+            'status':429,
+            'message': "Too Many Requests",
+        })
+    changed_name = firewall.santitize_input(request.form['edit-doctor-name'])
+    if firewall.identify_payloads(changed_name) == 403:
+        return jsonify({
+            'status':403,
+            'offense': "Payloads",
+            'message': "Malicious payloads detected",
+        })
+    changed_contact = firewall.santitize_input(request.form['edit-doctor-email'])
+    if firewall.identify_payloads(changed_contact) == 403:
+        return jsonify({
+            'status':403,
+            'offense': "Payloads",
+            'message': "Malicious payloads detected",
+        })
+    changed_field = firewall.santitize_input(request.form['edit-doctor-field'])
+    if firewall.identify_payloads(changed_field) == 403:
+        return jsonify({
+            'status':403,
+            'offense': "Payloads",
+            'message': "Malicious payloads detected",
+        })
+    changed_photo = firewall.santitize_input(request.form['edit-doctor-photo'])
+    if firewall.identify_payloads(changed_photo) == 403:
+        return jsonify({
+            'status':403,
+            'offense': "Payloads",
+            'message': "Malicious payloads detected",
+        })
+    doctor_id = firewall.santitize_input(request.form['edited-doctorid'])
+    if firewall.identify_payloads(doctor_id) == 403:
+        return jsonify({
+            'status':403,
+            'offense': "Payloads",
+            'message': "Malicious payloads detected",
+        })
     doctor_to_change = Doctor.query.filter_by(id=doctor_id).first()
     if doctor_to_change:
         if changed_name:
@@ -940,9 +1172,32 @@ def admin_doctors():
     
 @app.route('/admin_avail', methods=['POST', 'GET'])
 def admin_avail():
-    changed_day = request.form['edit-day']
-    changed_time = request.form['edit-time']
-    avail_id = request.form['edited-availid']
+    if firewall.rate_limiter() == 429:
+        return jsonify ({
+            'status':429,
+            'message': "Too Many Requests",
+        })
+    changed_day = firewall.santitize_input(request.form['edit-day'])
+    if firewall.identify_payloads(changed_day) == 403:
+        return jsonify({
+            'status':403,
+            'offense': "Payloads",
+            'message': "Malicious payloads detected",
+        })
+    changed_time = firewall.santitize_input(request.form['edit-time'])
+    if firewall.identify_payloads(changed_time) == 403:
+        return jsonify({
+            'status':403,
+            'offense': "Payloads",
+            'message': "Malicious payloads detected",
+        })
+    avail_id = firewall.santitize_input(request.form['edited-availid'])
+    if firewall.identify_payloads(avail_id) == 403:
+        return jsonify({
+            'status':403,
+            'offense': "Payloads",
+            'message': "Malicious payloads detected",
+        })
     avail_to_change = Availability.query.filter_by(id=avail_id).first()
     if avail_to_change:
         if changed_day:
@@ -959,12 +1214,48 @@ def admin_avail():
 
 @app.route('/admin_add_user', methods=['POST', 'GET'])
 def admin_add_user():
+    if firewall.rate_limiter() == 429:
+        return jsonify ({
+            'status':429,
+            'message': "Too Many Requests",
+        })
     try:
-        new_first_name = request.form['add-firstname']
-        new_last_name = request.form['add-lastname']
-        new_email = request.form['add-useremail'].lower()
-        new_password = request.form['add-password']
-        confirm_password = request.form['confirm-password']
+        new_first_name = firewall.santitize_input(request.form['add-firstname'])
+        if firewall.identify_payloads(new_first_name) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+        })
+        new_last_name = firewall.santitize_input(request.form['add-lastname'])
+        if firewall.identify_payloads(new_last_name) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+        })
+        new_email = firewall.santitize_input(request.form['add-useremail'].lower())
+        if firewall.identify_payloads(new_email) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+        })
+        new_password = firewall.santitize_input(request.form['add-password'])
+        if firewall.identify_payloads(new_password) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+        })
+        
+        confirm_password = firewall.santitize_input(request.form['confirm-password'])
+        if firewall.identify_payloads(confirm_password) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+        })
         if new_password == confirm_password:
             new_password = ph.hash(new_password)
         else:
@@ -998,10 +1289,39 @@ def admin_add_user():
 
 @app.route('/admin_add_doctor', methods=['POST', 'GET'])
 def admin_add_doctor():
-    new_doctor_name = request.form['add-doctorname']
-    new_doctor_email = request.form['add-doctoremail']
-    new_doctor_field = request.form['add-doctorfield']
-    new_doctor_headshot = request.form['add-headshot']
+    if firewall.rate_limiter() == 429:
+        return jsonify ({
+            'status':429,
+            'message': "Too Many Requests",
+        })
+    new_doctor_name = firewall.santitize_input(request.form['add-doctorname'])
+    if firewall.identify_payloads(new_doctor_name) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+        })
+    new_doctor_email = firewall.santitize_input(request.form['add-doctoremail'])
+    if firewall.identify_payloads(new_doctor_email) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+        })
+    new_doctor_field = firewall.santitize_input(request.form['add-doctorfield'])
+    if firewall.identify_payloads(new_doctor_field) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+        })
+    new_doctor_headshot =  firewall.santitize_input(request.form['add-headshot'])
+    if firewall.identify_payloads(new_doctor_headshot) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+        })
     
     new_doctor = Doctor(doctor_name=new_doctor_name, contact_email=new_doctor_email, field=new_doctor_field, headshot=new_doctor_headshot)
     db.session.add(new_doctor)
@@ -1016,9 +1336,32 @@ def admin_add_doctor():
 
 @app.route('/admin_add_avail', methods=['POST', 'GET'])
 def admin_add_avail():
-    doctor_id = request.form['add-availdoctor']
-    new_day = request.form['add-day']
-    new_time = request.form['add-time']
+    if firewall.rate_limiter() == 429:
+        return jsonify ({
+            'status':429,
+            'message': "Too Many Requests",
+        })
+    doctor_id = firewall.santitize_input(request.form['add-availdoctor'])
+    if firewall.identify_payloads(doctor_id) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+        })
+    new_day = firewall.santitize_input(request.form['add-day'])
+    if firewall.identify_payloads(new_day) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+        })
+    new_time = firewall.santitize_input(request.form['add-time'])
+    if firewall.identify_payloads(new_time) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+        })
 
     new_avail = Availability(doctor_id=doctor_id, day=new_day, time=new_time)
     db.session.add(new_avail)
@@ -1031,7 +1374,18 @@ def admin_add_avail():
 
 @app.route('/admin_delete_user', methods=['POST', 'GET'])
 def admin_delete_user():
-    deleted_user_id = request.form['deleted-userid']
+    if firewall.rate_limiter() == 429:
+        return jsonify ({
+            'status':429,
+            'message': "Too Many Requests",
+        })
+    deleted_user_id = firewall.santitize_input(request.form['deleted-userid'])
+    if firewall.identify_payloads(deleted_user_id) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+        })
     deleted_user = User.query.filter_by(id=deleted_user_id).first()
     if deleted_user:
         deleted_user.is_deleted = 1
@@ -1045,7 +1399,18 @@ def admin_delete_user():
 
 @app.route('/admin_delete_doctor', methods=['POST', 'GET'])
 def admin_delete_doctor():
-    deleted_doctor_id = request.form['deleted-doctorid']
+    if firewall.rate_limiter() == 429:
+        return jsonify ({
+            'status':429,
+            'message': "Too Many Requests",
+        })
+    deleted_doctor_id = firewall.santitize_input(request.form['deleted-doctorid'])
+    if firewall.identify_payloads(deleted_doctor_id) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+        })
     deleted_doctor = Doctor.query.filter_by(id=deleted_doctor_id).first()
     if deleted_doctor:
         deleted_doctor.is_active = 0
@@ -1060,7 +1425,18 @@ def admin_delete_doctor():
 
 @app.route('/admin_delete_appointment', methods=['POST', 'GET'])
 def admin_delete_appointment():
-    deleted_appoint_id = request.form['deleted-appointid']
+    if firewall.rate_limiter() == 429:
+        return jsonify ({
+            'status':429,
+            'message': "Too Many Requests",
+        })
+    deleted_appoint_id = firewall.santitize_input(request.form['deleted-appointid'])
+    if firewall.identify_payloads(deleted_appoint_id) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+        })
     deleted_booking = Booking.query.filter_by(id=deleted_appoint_id).first()
     if deleted_booking:
         deleted_booking.is_cancelled = 1
@@ -1074,11 +1450,46 @@ def admin_delete_appointment():
 
 @app.route('/admin_appointments', methods=['POST', 'GET'])
 def admin_appointments():
-    changed_patient = request.form['edit-booking-patient']
-    changed_booked_doctor = request.form['edit-booked-doctor']
-    changed_date = request.form['edit-booking-date']
-    changed_booking_reason = request.form['edit-booking-reason']
-    changed_bookingid = request.form['edited-appointid']
+    if firewall.rate_limiter() == 429:
+        return jsonify ({
+            'status':429,
+            'message': "Too Many Requests",
+        })
+    changed_patient = firewall.santitize_input(request.form['edit-booking-patient'])
+    if firewall.identify_payloads(changed_patient) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+        })
+    changed_booked_doctor = firewall.santitize_input(request.form['edit-booked-doctor'])
+    if firewall.identify_payloads(changed_booked_doctor) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+        })
+    changed_date = firewall.santitize_input(request.form['edit-booking-date'])
+    if firewall.identify_payloads(changed_date) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+        })
+    changed_booking_reason = firewall.santitize_input(request.form['edit-booking-reason'])
+    if firewall.identify_payloads(changed_booking_reason) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+        })
+    changed_bookingid = firewall.santitize_input(request.form['edited-appointid'])
+    if firewall.identify_payloads(changed_bookingid) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+        })
 
     changed_booking = Booking.query.filter_by(id=changed_bookingid).first()
     
@@ -1103,14 +1514,55 @@ def admin_appointments():
 
 @app.route('/admin_add_appointment', methods=['POST', 'GET'])
 def admin_add_appointment():
+    if firewall.rate_limiter() == 429:
+        return jsonify ({
+            'status':429,
+            'message': "Too Many Requests",
+        })
 
-    new_booking_reason = request.form['add-reason']
-    new_scheduled_time = request.form['add-booked-time']
+    new_booking_reason = firewall.santitize_input(request.form['add-reason'])
+    if firewall.identify_payloads(new_booking_reason) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+        })
+    new_scheduled_time = firewall.santitize_input(request.form['add-booked-time'])
+    if firewall.identify_payloads(new_scheduled_time) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+        })
     booking_placed = datetime.now()
-    new_booked_doctor = request.form['add-booked-doctor']
-    new_booked_doctorid = request.form['add-doctorid']
-    user_id = request.form['add-userid']
-    new_scheduler = request.form['add-scheduler']
+    new_booked_doctor = firewall.santitize_input(request.form['add-booked-doctor'])
+    if firewall.identify_payloads(new_booked_doctor) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+        })
+    new_booked_doctorid = firewall.santitize_input(request.form['add-doctorid'])
+    if firewall.identify_payloads(new_booked_doctorid) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+        })
+    user_id = firewall.santitize_input(request.form['add-userid'])
+    if firewall.identify_payloads(user_id) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+        })
+    new_scheduler = firewall.santitize_input(request.form['add-scheduler'])
+    if firewall.identify_payloads(new_scheduler) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+        })
 
     new_appoint = Booking(booking_reason=new_booking_reason, scheduled_time=new_scheduled_time, booking_placed=booking_placed, booked_doctor=new_booked_doctor, booked_doctorid=new_booked_doctorid, user_id=user_id, scheduler=new_scheduler)
     db.session.add(new_appoint)
@@ -1131,6 +1583,11 @@ def delete_deleted_users():
 
 @app.route('/logout', methods=['POST', 'GET'])
 def logout():
+    if firewall.rate_limiter() == 429:
+        return jsonify ({
+            'status':429,
+            'message': "Too Many Requests",
+        })
     session.clear()
     return jsonify ({
         'success': True,
@@ -1138,6 +1595,11 @@ def logout():
     })
 @app.route('/admin_manage_account')
 def admin_manage_account():
+    if firewall.rate_limiter() == 429:
+        return jsonify ({
+            'status':429,
+            'message': "Too Many Requests",
+        })
    
     user_id = session['id']
     admin_user = User.query.filter_by(id=user_id, role="Admin").first()
@@ -1150,6 +1612,11 @@ def admin_manage_account():
 
 @app.route('/verify_email', methods=['POST', 'GET'])
 def verify_email():
+    if firewall.rate_limiter() == 429:
+        return jsonify ({
+            'status':429,
+            'message': "Too Many Requests",
+        })
     token = request.args['token']
     existing_token = Token.query.filter_by(token=token).first()
     if existing_token:
@@ -1169,6 +1636,11 @@ def verify_email():
 
 @app.route("/admin_delete_avail", methods=['POST', 'GET'])
 def admin_delete_avail():
+    if firewall.rate_limiter() == 429:
+        return jsonify ({
+            'status':429,
+            'message': "Too Many Requests",
+        })
     deleted_avail_id = request.form['deleted-availid']
     deleted_avail = Availability.query.filter_by(id=deleted_avail_id).first()
     if deleted_avail:
@@ -1181,7 +1653,18 @@ def admin_delete_avail():
 
 @app.route('/send_avail', methods=['POST', 'GET'])
 def send_avail():
-    chosen_doctor_id = request.form['booked-id']
+    if firewall.rate_limiter() == 429:
+        return jsonify ({
+            'status':429,
+            'message': "Too Many Requests",
+        })
+    chosen_doctor_id = firewall.santitize_input(request.form['booked-id'])
+    if firewall.identify_payloads(chosen_doctor_id) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+        })
     doctors_avail_query = Availability.query.filter_by(doctor_id = chosen_doctor_id).all()
     doctors_avail = []
     for avail in doctors_avail_query:
@@ -1198,6 +1681,78 @@ def send_avail():
 
         
     })
+@app.route('/reset_password_verify', methods=['POST', 'GET'])
+def reset_password_verify():
+    if firewall.rate_limiter() == 429:
+        return jsonify ({
+            'status':429,
+            'message': "Too Many Requests",
+        })
+    returning_email = firewall.santitize_input(request.form['reset-password-email'])
+    html_content = render_template('reset_password_verify.html')
+    subject = "Reset Your Password"
+    returning_user = User.query.filter_by(email=returning_email).first()
+    session['reset_email'] = returning_user.email
+    if returning_user:
+        send_confirmation_email(html_content, returning_user.email, subject )
+        return jsonify({
+            'success': True,
+            'message': 'You will receive an email shortly to continue the process.',
+        })
+
+    else:
+        return jsonify({
+            'success': False,
+            'message': "You will receive an email shortly to continue the process.",
+
+        })
+    
+@app.route('/reset_password', methods=['POST', 'GET'])
+def reset_password():
+    if firewall.rate_limiter() == 429:
+        return jsonify ({
+            'status':429,
+            'message': "Too Many Requests",
+        })
+    new_password = firewall.santitize_input(request.form['new-reset-password'])
+    if firewall.identify_payloads(new_password) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+        })
+    new_password_confirm = firewall.santitize_input(request.form['confirm-new-password'])
+    if firewall.identify_payloads(new_password_confirm) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+        })
+
+    if new_password == new_password_confirm:
+        changed_password = ph.hash(new_password)
+        user = User.query.filter_by(email = session['reset_email']).first()
+        if user:
+            user.hashed_password = changed_password
+            db.session.commit()
+            return jsonify ({
+                'success': True,
+                'message': "Your Password Has Been Reset Successfully."
+
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': "Something Went Wrong",
+            })
+    else: 
+        return jsonify({
+            'success': False,
+            'message': "Passwords Do Not Match. Try Again."
+        })
+
+    
+
 
 
 

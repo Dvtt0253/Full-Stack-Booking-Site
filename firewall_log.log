@@ -1,0 +1,12 @@
+2025-05-26 11:35:57,059 - WARNING -  * Debugger is active!
+2025-05-26 11:35:57,080 - INFO -  * Debugger PIN: 127-192-054
+2025-05-26 11:36:14,745 - INFO - 127.0.0.1 - - [26/May/2025 11:36:14] "POST /login_auth HTTP/1.1" 200 -
+2025-05-26 11:36:14,838 - INFO - 127.0.0.1 - - [26/May/2025 11:36:14] "GET /homepage HTTP/1.1" 22025-05-26 11:38:43,877 - INFO -  * Restarting with stat
+ay/2025 11:36:14] "GET /homepage HTTP/1.1" 200 -
+2025-05-26 11:36:20,566 - INFO - 127.0.0.1 - - [26/May/2025 11:36:20] "GET /booking_page HTTP/1.1" 200 -
+2025-05-26 11:36:20,581 - INFO - 127.0.0.1 - - [26/May/2025 11:36:20] "GET /booking_page HTTP/1.1" 200 -
+2025-05-26 11:36:21,579 - INFO - 127.0.0.1 - - [26/May/2025 11:36:21] "GET /account_management HTTP/1.1" 200 -
+2025-05-26 11:36:21,599 - INFO - 127.0.0.1 - - [26/May/2025 11:36:21] "GET /account_management HTTP/1.1" 200 -
+2025-05-26 11:36:26,757 - INFO - 127.0.0.1 - - [26/May/2025 11:36:26] "GET /homepage HTTP/1.1" 200 -
+2025-05-26 11:36:26,804 - INFO - 127.0.0.1 - - [26/May/2025 11:36:26] "GET /homepage HTTP/1.1" 200 -
+2025-05-26 11:38:42,968 - INFO -  * Detected change in '/Users/sunny/Documents/GitHub/Full-Stack-Booking-Site/booking_website/booking.py', reloading

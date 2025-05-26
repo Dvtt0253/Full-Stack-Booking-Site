@@ -272,7 +272,7 @@ input{
     text-align: center;
     
 }
-.cancel-form button{
+.cancel-form button, .reset-password-form button, .reset-password-link-form button{
     width:20vw;
     height: 5vh;
     margin:4vh auto 0 auto;
@@ -284,6 +284,11 @@ input{
     border-radius:2px;
     cursor:pointer;
     
+}
+.cancel-form button:hover, .reset-password-form button:hover, .reset-password-link-form button:hover{
+
+    background-color: #4F637A;
+
 }
 .cancel-form p{
     text-align: center;
@@ -635,4 +640,42 @@ input{
     cursor:pointer;
 
 }
+.reset-password-form{
+    display:block; 
+    width: fit-content;
+    margin:auto;
+    text-align:center;
+    letter-spacing: 0.8px;
+}
+.reset-password-form input{
+    display: block;
+    width: 20vw;
+    height: 5vh;
+    margin: 3vh auto;
+}
+.reset-password-form p{
+    margin-top: 5vh;
+    margin-bottom: 5vh;
+    
+}
+.reset-password-link-form{
+    display:block;
+    width:fit-content;
+    height:fit-content;
+    margin:auto;
+    text-align: center;
+}
+.reset-password-link-form input{
+    display:block;
+    width:20vw;
+    height:5vh;
+    margin:3vh auto;
+    
+
+}
+.reset-password-link-form h2{
+    margin-top: 5vh;
+    margin-bottom: 8vh;
+}
+
 

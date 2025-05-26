@@ -1,9 +1,12 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BlueLogo from './BlueLogo.jsx'
+import CsrfToken from './CsrfToken.jsx';
 
 function Login() {
 
     const navigate = useNavigate();
+    const [csrfToken, setCsrfToken] = useState();
 
 
     const handleLogin = async (formData) => {
@@ -22,13 +25,24 @@ function Login() {
             )
             const data = await response.json();
             console.log(data);
-            if(data.success && data.Role === "User"){
+            if(data.status === 403 && data.offense === "Login Attempts"){
+                navigate('/403_Response');
+
+            }
+            else if(data.status === 403 && data.ofense === "Payloads"){
+                navigate('403_Payloads');
+
+            }
+            else if(data.success && data.Role === "User"){
 
                 navigate('/homepage');
+                setCsrfToken(data.session_csrf);
 
             }
             else if(data.success && data.Role === "Admin"){
                 navigate('/admin_homepage')
+                setCsrfToken(data.session_csrf);
+                
             }
             else{
 
@@ -55,6 +69,7 @@ function Login() {
 
     return(
             <>
+            <CsrfToken token = {csrfToken}/>
             
                 <BlueLogo/>
             <div className="login-form">
@@ -64,7 +79,9 @@ function Login() {
                         <input type="email" id="login-email" name="login-email" required/>
                         <label htmlFor="login-password">Password:</label>
                         <input type="password" id="login-password" name="login-password" required/>
+                        <p>Forgot Your Password? <a href="#"><p onClick={() => navigate('/reset_password')}>Reset Your Password Here</p></a></p>
                         <button type="submit">Log In</button>
+
                     
 
                     </form>
@@ -75,6 +92,7 @@ function Login() {
             </>
         
     );
-
+   
 }
+
 export default Login

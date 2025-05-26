@@ -80,7 +80,15 @@ function UserHomepage(){
 
             });
             const data = await response.json();
-            if(data.success){
+            if(data.status === 429){
+                navigate('/429_Response');
+
+            }
+            else if(data.status === 403){
+                navigate('/403_Payloads');
+
+            }
+            else if(data.success){
                 alert(data.message);
                 navigate('/booking_page');
 

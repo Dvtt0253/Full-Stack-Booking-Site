@@ -28,7 +28,14 @@ function AdminHomepage(){
                 });
 
                 const data = await response.json();
-                if(data.success){
+                if(data.status === 429){
+                    navigate('/429_Response');
+
+                }
+                else if(data.status === 403){
+                    navigate('403_Payloads');
+                }
+                else if(data.success){
                     console.log(data);
                     setUserLength(data.user_length);
                     setDoctorLength(data.doctor_length);
@@ -68,7 +75,14 @@ function AdminHomepage(){
 
         });
             const data = await response.json();
-            if(data.success){
+            if(data.status === 429){
+                navigate('/429_Response');
+            }
+            else if(data.status === 403){
+                navigate('/403_Payloads');
+
+            }
+            else if(data.success){
               
                 alert(data.message);
                 location.reload();
@@ -94,7 +108,14 @@ function AdminHomepage(){
                 credentials: 'include',
             });
             const data = await response.json();
-            if(data.success){
+            if(data.status === 429){
+                navigate('/429_Response');
+            }
+            else if(data.status === 403){
+                navigate('/403_Payloads');
+
+            }
+            else if(data.success){
               
                 alert(data.message);
                 location.reload();
@@ -118,7 +139,14 @@ function AdminHomepage(){
                 credentials: 'include',
             });
             const data = await response.json();
-            if(data.success){
+            if(data.status === 429){
+                navigate('/429_Response');
+            }
+            else if(data.status === 403){
+                navigate('/403_Payloads');
+
+            }
+            else if(data.success){
                 alert(data.message);
                 location.reload();
             }
@@ -140,7 +168,14 @@ function AdminHomepage(){
                 credentials : 'include',
             });
             const data = await response.json();
-            if(data.success){
+            if(data.status === 429){
+                navigate('/429_Response');
+            }
+            else if(data.status === 403){
+                navigate('/403_Payloads');
+
+            }
+            else if(data.success){
                 alert(data.message);
                 location.reload();
             }
@@ -164,7 +199,14 @@ function AdminHomepage(){
 
             });
             const data = await response.json();
-            if(data.success){
+            if(data.status === 429){
+                navigate('/429_Response');
+            }
+            else if(data.status === 403){
+                navigate('/403_Payloads');
+
+            }
+            else if(data.success){
                 alert(data.message);
                 location.reload();
             }
@@ -186,7 +228,14 @@ function AdminHomepage(){
                 credentials: 'include',
             });
             const data = await response.json();
-            if(data.success){
+            if(data.status === 429){
+                navigate('/429_Response');
+            }
+            else if(data.status === 403){
+                navigate('/403_Payloads');
+
+            }
+            else if(data.success){
                 alert(data.message);
                 location.reload();
             }
@@ -208,7 +257,14 @@ function AdminHomepage(){
                 credentials: 'include',
             });
             const data = await response.json();
-            if(data.success){
+            if(data.status === 429){
+                navigate('/429_Response');
+            }
+            else if(data.status === 403){
+                navigate('/403_Payloads');
+
+            }
+            else if(data.success){
                 alert(data.message);
                 location.reload();
             }
@@ -229,7 +285,14 @@ function AdminHomepage(){
                 credentials: 'include',
             });
             const data = await response.json();
-            if(data.success){
+            if(data.status === 429){
+                navigate('/429_Response');
+            }
+            else if(data.status === 403){
+                navigate('/403_Payloads');
+
+            }
+            else if(data.success){
                 alert(data.message);
                 location.reload();
             }
@@ -251,7 +314,14 @@ function AdminHomepage(){
             });
 
             const data = await response.json();
-            if(data.success){
+            if(data.status === 429){
+                navigate('/429_Response');
+            }
+            else if(data.status === 403){
+                navigate('/403_Payloads');
+
+            }
+            else if(data.success){
                 alert(data.message);
                 location.reload();
             }
@@ -272,8 +342,15 @@ function AdminHomepage(){
                 credentials: 'include',
             });
             const data = await response.json()
+            if(data.status === 429){
+                navigate('/429_Response');
+            }
+            else if(data.status === 403){
+                navigate('/403_Payloads');
 
-            if(data.success){
+            }
+
+            else if(data.success){
                 alert(data.message);
                 location.reload();
             }
@@ -294,8 +371,15 @@ function AdminHomepage(){
                 credentials: 'include',
             });
             const data = await response.json()
+            if(data.status === 429){
+                navigate('/429_Response');
+            }
+            else if(data.status === 403){
+                navigate('/403_Payloads');
 
-            if(data.success){
+            }
+
+            else if(data.success){
                 alert(data.message);
                 location.reload();
             }
@@ -316,8 +400,15 @@ function AdminHomepage(){
                 credentials: 'include',
             });
             const data = await response.json()
+            if(data.status === 429){
+                navigate('/429_Response');
+            }
+            else if(data.status === 403){
+                navigate('/403_Payloads');
 
-            if(data.success){
+            }
+
+            else if(data.success){
                 alert(data.message);
                 location.reload();
             }

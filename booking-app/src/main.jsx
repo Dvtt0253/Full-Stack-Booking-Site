@@ -11,7 +11,14 @@ import BookingPage from './BookingPage.jsx';
 import UserAccountManage from './UserAccountManage.jsx';
 import ConfirmAccountDelete from './ConfirmAccountDelete.jsx';
 import AdminManageAccount from './AdminManageAccount.jsx';
+import ResetPassword from './ResetPassword.jsx';
 import App from './App.jsx'
+import ResetPasswordLink from './ResetPasswordLink.jsx';
+import RateLimitResponse from './RateLimitResponse.jsx';
+import LoginRateResponse from './LoginRateResponse.jsx';
+import Payloads from './Payloads.jsx';
+
+
 
 const router = createBrowserRouter([
   {
@@ -51,7 +58,28 @@ const router = createBrowserRouter([
     path: '/admin_account_management',
     element: <AdminManageAccount/>
 
-  }
+  },
+  {
+    path: '/reset_password',
+    element: <ResetPassword/>
+  },
+  {
+    path: '/reset_password_confirmed',
+    element: <ResetPasswordLink/>
+  }, 
+  {
+    path: '/429_Response',
+    element: <RateLimitResponse/>
+  }, 
+  {
+    path: '/403_Response',
+    element: <LoginRateResponse/>
+  }, 
+  {
+    path: '/403_Payloads',
+    element: <Payloads/>
+  }, 
+  
 
 ]);
 

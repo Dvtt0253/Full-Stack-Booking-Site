@@ -13,7 +13,14 @@ function BookingPage(){
                     credentials: 'include',
                  });
                  const data = await response.json();
-                 if(data.success){
+                 if(data.status === 429){
+                navigate('/429_Response');
+                }
+                else if(data.status === 403){
+                    navigate('/403_Payloads');
+
+                }
+                 else if(data.success){
                     console.log(data);
                     console.log("Appoints fetched successfully");
                     setZippedCan(data.zip_cancelled);
