@@ -1,10 +1,12 @@
 import {useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useCsrfToken } from './CsrfTokenContext';
 
 function BookingPage(){
     const [zippedCancelled, setZippedCan] = useState([]);
     const [zippedActive, setZippedActive] = useState([]);
     const navigate = useNavigate();
+    const csrf_token = useCsrfToken();
 
     useEffect(()=>{
         const fetchAppoints = async () => {
@@ -171,6 +173,7 @@ function BookingPage(){
      <div style={{display:'none'}} id="cancel-form" className="cancel-form">
         <form onSubmit={handleCancel}>
             <input type="hidden" id="cancelled-appoint-id" name="cancelled-appoint-id"/>
+            <input type="hidden" id="csrf_token" name="csrf_token" value={csrf_token.csrfToken}/>
             <p>By Proceeding, You are agreeing to cancel this appointment.</p>
             <p>Please note, this action is irreversible.</p>
             <button type="submit">Cancel</button>

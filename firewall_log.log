@@ -1,12 +1,58 @@
-2025-05-26 11:35:57,059 - WARNING -  * Debugger is active!
-2025-05-26 11:35:57,080 - INFO -  * Debugger PIN: 127-192-054
-2025-05-26 11:36:14,745 - INFO - 127.0.0.1 - - [26/May/2025 11:36:14] "POST /login_auth HTTP/1.1" 200 -
-2025-05-26 11:36:14,838 - INFO - 127.0.0.1 - - [26/May/2025 11:36:14] "GET /homepage HTTP/1.1" 22025-05-26 11:38:43,877 - INFO -  * Restarting with stat
-ay/2025 11:36:14] "GET /homepage HTTP/1.1" 200 -
-2025-05-26 11:36:20,566 - INFO - 127.0.0.1 - - [26/May/2025 11:36:20] "GET /booking_page HTTP/1.1" 200 -
-2025-05-26 11:36:20,581 - INFO - 127.0.0.1 - - [26/May/2025 11:36:20] "GET /booking_page HTTP/1.1" 200 -
-2025-05-26 11:36:21,579 - INFO - 127.0.0.1 - - [26/May/2025 11:36:21] "GET /account_management HTTP/1.1" 200 -
-2025-05-26 11:36:21,599 - INFO - 127.0.0.1 - - [26/May/2025 11:36:21] "GET /account_management HTTP/1.1" 200 -
-2025-05-26 11:36:26,757 - INFO - 127.0.0.1 - - [26/May/2025 11:36:26] "GET /homepage HTTP/1.1" 200 -
-2025-05-26 11:36:26,804 - INFO - 127.0.0.1 - - [26/May/2025 11:36:26] "GET /homepage HTTP/1.1" 200 -
-2025-05-26 11:38:42,968 - INFO -  * Detected change in '/Users/sunny/Documents/GitHub/Full-Stack-Booking-Site/booking_website/booking.py', reloading
+2025-05-26 18:12:58,371 - WARNING -  * Debugger is active!
+2025-05-26 18:12:58,428 - INFO -  * Debugger PIN: 127-192-054
+2025-05-26 18:14:23,735 - INFO - 127.0.0.1 - - [26/May/2025 18:14:23] "[35m[1mGET /get_user_csrf HTTP/1.1[0m" 500 -
+2025-05-26 18:14:23,771 - INFO - 127.0.0.1 - - [26/May/2025 18:14:23] "[35m[1mGET /get_user_csrf HTTP/1.1[0m" 500 -
+2025-05-26 18:14:23,829 - INFO - 127.0.0.1 - - [26/May/2025 18:14:23] "[35m[1mGET /get_user_csrf HTTP/1.1[0m" 500 -
+2025-05-26 18:14:32,045 - INFO - 127.0.0.1 - - [26/May/2025 18:14:32] "[35m[1mGET /get_user_csrf HTTP/1.1[0m" 500 -
+2025-05-26 18:14:32,116 - INFO - 127.0.0.1 - - [26/May/2025 18:14:32] "[35m[1mGET /get_user_csrf HTTP/1.1[0m" 500 -
+2025-05-26 18:14:32,157 - INFO - 127.0.0.1 - - [26/May/2025 18:14:32] "[35m[1mGET /get_user_csrf HTTP/1.1[0m" 500 -
+2025-05-26 18:14:38,257 - INFO - 127.0.0.1 - - [26/May/2025 18:14:38] "POST /login_auth HTTP/1.1" 200 -
+2025-05-26 18:15:20,251 - INFO - 127.0.0.1 - - [26/May/2025 18:15:20] "GET /get_user_csrf HTTP/1.1" 200 -
+2025-05-26 18:15:20,262 - INFO - 127.0.0.1 - - [26/May/2025 18:15:20] "GET /get_user_csrf HTTP/1.1" 200 -
+2025-05-26 18:15:21,819 - INFO - 127.0.0.1 - - [26/May/2025 18:15:21] "GET /get_user_csrf HTTP/1.1" 200 -
+2025-05-26 18:15:21,832 - INFO - 127.0.0.1 - - [26/May/2025 18:15:21] "GET /get_user_csrf HTTP/1.1" 200 -
+2025-05-26 18:15:27,834 - INFO - 127.0.0.1 - - [26/May/2025 18:15:27] "GET /get_user_csrf HTTP/1.1" 200 -
+2025-05-26 18:15:27,860 - INFO - 127.0.0.1 - - [26/May/2025 18:15:27] "GET /get_user_csrf HTTP/1.1" 200 -
+2025-05-26 18:15:27,893 - INFO - 127.0.0.1 - - [26/May/2025 18:15:27] "GET /homepage HTTP/1.1" 200 -
+2025-05-26 18:15:27,925 - INFO - 127.0.0.1 - - [26/May/2025 18:15:27] "GET /homepage HTTP/1.1" 200 -
+2025-05-26 18:15:35,423 - INFO - 127.0.0.1 - - [26/May/2025 18:15:35] "GET /account_management HTTP/1.1" 200 -
+2025-05-26 18:15:35,439 - INFO - 127.0.0.1 - - [26/May/2025 18:15:35] "GET /account_management HTTP/1.1" 200 -
+2025-05-26 18:15:46,271 - INFO - 127.0.0.1 - - [26/May/2025 18:15:46] "GET /account_management HTTP/1.1" 200 -
+2025-05-26 18:15:46,277 - INFO - 127.0.0.1 - - [26/May/2025 18:15:46] "GET /get_user_csrf HTTP/1.1" 200 -
+2025-05-26 18:15:46,296 - INFO - 127.0.0.1 - - [26/May/2025 18:15:46] "GET /get_user_csrf HTTP/1.1" 200 -
+2025-05-26 18:15:46,297 - INFO - 127.0.0.1 - - [26/May/2025 18:15:46] "GET /account_management HTTP/1.1" 200 -
+2025-05-26 18:15:48,885 - INFO - 127.0.0.1 - - [26/May/2025 18:15:48] "POST /change_email HTTP/1.1" 200 -
+2025-05-26 18:15:55,037 - INFO - 127.0.0.1 - - [26/May/2025 18:15:55] "GET /account_management HTTP/1.1" 200 -
+2025-05-26 18:15:55,039 - INFO - 127.0.0.1 - - [26/May/2025 18:15:55] "GET /get_user_csrf HTTP/1.1" 200 -
+2025-05-26 18:15:55,084 - INFO - 127.0.0.1 - - [26/May/2025 18:15:55] "GET /account_management HTTP/1.1" 200 -
+2025-05-26 18:15:55,087 - INFO - 127.0.0.1 - - [26/May/2025 18:15:55] "GET /get_user_csrf HTTP/1.1" 200 -
+2025-05-26 18:15:55,889 - INFO - 127.0.0.1 - - [26/May/2025 18:15:55] "POST /change_email HTTP/1.1" 200 -
+2025-05-26 18:16:52,233 - INFO - 127.0.0.1 - - [26/May/2025 18:16:52] "GET /account_management HTTP/1.1" 200 -
+2025-05-26 18:16:55,565 - INFO - 127.0.0.1 - - [26/May/2025 18:16:55] "GET /account_management HTTP/1.1" 200 -
+2025-05-26 18:17:02,254 - INFO - 127.0.0.1 - - [26/May/2025 18:17:02] "GET /account_management HTTP/1.1" 200 -
+2025-05-26 18:17:04,404 - INFO - 127.0.0.1 - - [26/May/2025 18:17:04] "GET /account_management HTTP/1.1" 200 -
+2025-05-26 18:17:05,950 - INFO - 127.0.0.1 - - [26/May/2025 18:17:05] "GET /account_management HTTP/1.1" 200 -
+2025-05-26 18:17:13,133 - INFO - 127.0.0.1 - - [26/May/2025 18:17:13] "GET /account_management HTTP/1.1" 200 -
+2025-05-26 18:17:13,151 - INFO - 127.0.0.1 - - [26/May/2025 18:17:13] "GET /account_management HTTP/1.1" 200 -
+2025-05-26 18:17:20,588 - INFO - 127.0.0.1 - - [26/May/2025 18:17:20] "GET /get_user_csrf HTTP/1.1" 200 -
+2025-05-26 18:17:20,597 - INFO - 127.0.0.1 - - [26/May/2025 18:17:20] "GET /get_user_csrf HTTP/1.1" 200 -
+2025-05-26 18:17:26,972 - INFO - 127.0.0.1 - - [26/May/2025 18:17:26] "POST /login_auth HTTP/1.1" 200 -
+2025-05-26 18:17:27,025 - INFO - 127.0.0.1 - - [26/May/2025 18:17:27] "GET /homepage HTTP/1.1" 200 -
+2025-05-26 18:17:27,100 - INFO - 127.0.0.1 - - [26/May/2025 18:17:27] "GET /homepage HTTP/1.1" 200 -
+2025-05-26 18:17:29,492 - INFO - 127.0.0.1 - - [26/May/2025 18:17:29] "GET /account_management HTTP/1.1" 200 -
+2025-05-26 18:17:29,505 - INFO - 127.0.0.1 - - [26/May/2025 18:17:29] "GET /account_management HTTP/1.1" 200 -
+2025-05-26 18:17:59,972 - INFO - 127.0.0.1 - - [26/May/2025 18:17:59] "GET /account_management HTTP/1.1" 200 -
+2025-05-26 18:18:01,544 - INFO - 127.0.0.1 - - [26/May/2025 18:18:01] "GET /account_management HTTP/1.1" 200 -
+2025-05-26 18:18:03,153 - INFO - 127.0.0.1 - - [26/May/2025 18:18:03] "GET /account_management HTTP/1.1" 200 -
+2025-05-26 18:18:03,270 - INFO - 127.0.0.1 - - [26/May/2025 18:18:03] "GET /account_management HTTP/1.1" 200 -
+2025-05-26 18:18:06,067 - INFO - 127.0.0.1 - - [26/May/2025 18:18:06] "GET /account_management HTTP/1.1" 200 -
+2025-05-26 18:18:10,413 - INFO - 127.0.0.1 - - [26/May/2025 18:18:10] "GET /account_management HTTP/1.1" 200 -
+2025-05-26 18:18:10,687 - INFO - 127.0.0.1 - - [26/May/2025 18:18:10] "GET /account_management HTTP/1.1" 200 -
+2025-05-26 18:18:19,303 - INFO - 127.0.0.1 - - [26/May/2025 18:18:19] "GET /account_management HTTP/1.1" 200 -
+2025-05-26 18:18:29,396 - INFO - 127.0.0.1 - - [26/May/2025 18:18:29] "GET /get_user_csrf HTTP/1.1" 200 -
+2025-05-26 18:18:29,437 - INFO - 127.0.0.1 - - [26/May/2025 18:18:29] "GET /get_user_csrf HTTP/1.1" 200 -
+2025-05-26 18:18:45,035 - INFO - 127.0.0.1 - - [26/May/2025 18:18:45] "POST /login_auth HTTP/1.1" 200 -
+2025-05-26 18:18:45,099 - INFO - 127.0.0.1 - - [26/May/2025 18:18:45] "GET /homepage HTTP/1.1" 200 -
+2025-05-26 18:18:45,235 - INFO - 127.0.0.1 - - [26/May/2025 18:18:45] "GET /homepage HTTP/1.1" 200 -
+2025-05-26 18:18:47,310 - INFO - 127.0.0.1 - - [26/May/2025 18:18:47] "GET /account_management HTTP/1.1" 200 -
+2025-05-26 18:18:47,324 - INFO - 127.0.0.1 - - [26/May/2025 18:18:47] "GET /account_management HTTP/1.1" 200 -

@@ -4,6 +4,7 @@ import doctorLogo from './assets/doctor-logo.png';
 import patientLogo from './assets/patient-logo.png';
 import AdminProfilePic from './assets/admin-profile.png';
 import NavLogo from './NavLogo.jsx';
+import { useCsrfToken } from './CsrfTokenContext.jsx';
 
 
 function AdminHomepage(){
@@ -18,6 +19,7 @@ function AdminHomepage(){
     const [deletedUsers, setDeletedUsers] = useState([]);
     const [inactiveDoctors, setInactiveDoctors] = useState([]);
     const [deletedAppoints, setDeletedAppoints] = useState([]);
+    const csrf_token = useCsrfToken();
 
     useEffect(() => {
 
@@ -944,6 +946,7 @@ function AdminHomepage(){
                         <input type="password" id="confirm-password" name="confirm-password" required/>
                         <label htmlFor="add-role">Role: </label>
                         <input type="text" id="add-role" name="add-role"/>
+                        <input type="hidden" id="csrf_token" name="csrf_token" value={csrf_token.csrfToken}/>
                         <button type="submit">Add User</button>
                     </form>
 
@@ -963,11 +966,13 @@ function AdminHomepage(){
                         <label htmlFor="edit-role">Role: </label>
                         <input type="text" id="edit-role" name="edit-role"/>
                         <input type="hidden" id="edited-userid" name="edited-userid"/>
+                        <input type="hidden" id="csrf_token" name="csrf_token" value={csrf_token.csrfToken}/>
                         <button type="submit">Submit Changes</button>
                     </form>
                     <form onSubmit={handleUserDelete}>
                         <button className="delete-attribute-button" type="submit">Delete User</button>
                         <input type="hidden" id="deleted-userid" name="deleted-userid"/>
+                        <input type="hidden" id="csrf_token" name="csrf_token" value={csrf_token.csrfToken}/>
                     </form>
 
                 </div>
@@ -1038,11 +1043,13 @@ function AdminHomepage(){
                         <label htmlFor="edit-doctor-photo">Photo Path: </label>
                         <input type="text" id="edit-doctor-photo" name="edit-doctor-photo"/>
                         <input type="hidden" id="edited-doctorid" name="edited-doctorid"/>
+                        <input type="hidden" id="csrf_token" name="csrf_token" value={csrf_token.csrfToken}/>
                         <button type="submit">Submit Changes</button>
                     </form>
 
                     <form onSubmit={handleDoctorDelete}>
                         <input type="hidden" id="deleted-doctorid" name="deleted-doctorid"/>
+                        <input type="hidden" id="csrf_token" name="csrf_token" value={csrf_token.csrfToken}/>
                         <button className="delete-attribute-button" type="submit">Deactivate Doctor</button>
                         
                     </form>
@@ -1061,6 +1068,7 @@ function AdminHomepage(){
                         <input type="text" id="add-doctorfield" name="add-doctorfield" required/>
                         <label htmlFor="add-headshot">Photo Path: </label>
                         <input type="text" id="add-headshot" name="add-headshot" required/>
+                        <input type="hidden" id="csrf_token" name="csrf_token" value={csrf_token.csrfToken}/>
                         
                         <button type="submit">Add Doctor</button>
                     </form>
@@ -1152,6 +1160,7 @@ function AdminHomepage(){
                         <input type="text" id="add-booked-time" name="add-booked-time" required/>
                         <label htmlFor="add-userid">User ID</label>
                         <input type="number" id="add-userid" name="add-userid" required/>
+                        <input type="hidden" id="csrf_token" name="csrf_token" value={csrf_token.csrfToken}/>
                         
 
 
@@ -1189,11 +1198,13 @@ function AdminHomepage(){
                         <input type="text" id="edit-time" name="edit-time"/>
                         
                         <input type="hidden" id="edited-availid" name="edited-availid"/>
+                        <input type="hidden" id="csrf_token" name="csrf_token" value={csrf_token.csrfToken}/>
                         <button>Submit Changes</button>
 
                     </form>
                     <form onSubmit={handleAvailDelete}>
                         <input type="hidden" id="deleted-availid" name="deleted-availid"/>
+                        <input type="hidden" id="csrf_token" name="csrf_token" value={csrf_token.csrfToken}/>
                         <button className="delete-attribute-button" type="submit">Delete Availability</button>
                         
                     </form>
@@ -1212,6 +1223,7 @@ function AdminHomepage(){
                         <input type="text" id="add-day" name="add-day" required/>
                         <label htmlFor="add-time">Time: </label>
                         <input type="text" id="add-time" name="add-time" required/>
+                        <input type="hidden" id="csrf_token" name="csrf_token" value={csrf_token.csrfToken}/>
                        
                         
                         <button type="submit">Add Availability</button>

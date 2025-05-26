@@ -2,6 +2,7 @@ import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import DeleteAccount from './DeleteAccount.jsx';
 import NewLogo from './NewLogo.jsx';
+import { useCsrfToken } from './CsrfTokenContext.jsx';
 
 function UserAccountManage({showDelete = true, is_user = true, homepage_path='/homepage'}){
     const [firstName, setFirstName] = useState();
@@ -9,10 +10,12 @@ function UserAccountManage({showDelete = true, is_user = true, homepage_path='/h
     const [joinDate, setJoinDate] = useState();
     const [email, setEmail] = useState();
     const[userId, setUserId] = useState();
+    const csrf_token = useCsrfToken();
     const navigate = useNavigate();
    
 
     useEffect(() => {
+        console.log(`Csrf Token: ${csrf_token.csrfToken}`);
 
         const fetchUserData = async ()=>{
             try{
@@ -159,6 +162,7 @@ function UserAccountManage({showDelete = true, is_user = true, homepage_path='/h
             <form onSubmit={handleEmailChange}>
                 <label for="user-change-email">Change Email Address</label>
                 <input type="email" id="user-change-email" name="user-change-email" required/>
+                <input type="hidden" id="csrf_token" name="csrf_token" value={csrf_token.csrfToken}/>
                 <button type="submit">Change Email</button>
             </form>
 
@@ -173,6 +177,8 @@ function UserAccountManage({showDelete = true, is_user = true, homepage_path='/h
                 <input type="password" id="user-new-password" name="user-new-password" required/>
                 <label for="user-confirm-password">Confirm New Password: </label>
                 <input type="password" id="confirm-new-password" name="confirm-new-password" required/>
+                <input type="hidden" id="csrf_token" name="csrf_token" value={csrf_token.csrfToken}/>
+
                 <button type="submit">Change Password</button>
             </form>
 

@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react';
 import { useNavigate} from 'react-router-dom';
 import NavLogo from './NavLogo.jsx';
+import { useCsrfToken } from './CsrfTokenContext.jsx';
 
 
 
@@ -11,6 +12,7 @@ function UserHomepage(){
     const [lastName, setLastName] = useState();
     const [alldoctors, setDoctors] = useState([]);
     const [doctorsAvail, setDoctorsAvail] = useState([]);
+    const csrf_token = useCsrfToken();
 
     useEffect(()=>{
        
@@ -209,6 +211,7 @@ function UserHomepage(){
                     
                 </select>
                 <input type="hidden" name="chosen-doctor-id" id="chosen-doctor-id"/>
+                <input type="hidden" name="csrf_token" id="csrf_token" value={csrf_token.csrfToken}/>
                 <button type="submit">Schedule</button>
 
 

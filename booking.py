@@ -449,92 +449,99 @@ def submit_booking():
             'status': 429,
             'message': "Too Many Requests", 
         })
-    scheduler_name = firewall.santitize_input(request.form['book-patient-name'])
-    if firewall.identify_payloads(scheduler_name) == 403:
-        return jsonify({
-            'status':403,
-            'offense': "Payloads",
-            'message': "Malicious payloads detected",
-        })
-    booking_reason = firewall.santitize_input(request.form['book-reason'])
-    if firewall.identify_payloads(booking_reason) == 403:
-        return jsonify({
-            'status':403,
-            'offense': "Payloads",
-            'message': "Malicious payloads detected",
-        })
-    booked_doctorid = firewall.santitize_input(request.form['chosen-doctor-id'])
-    if firewall.identify_payloads(booked_doctorid) == 403:
-        return jsonify({
-            'status':403,
-            'offense': "Payloads",
-            'message': "Malicious payloads detected",
-        })
-   
-    requested_doctor = Doctor.query.filter_by(id=booked_doctorid).first()
-    booked_doctorname = requested_doctor.doctor_name
-    scheduled_time = firewall.santitize_input(request.form['scheduled-time'])
-    if firewall.identify_payloads(scheduled_time) == 403:
-        return jsonify({
-            'status':403,
-            'offense': "Payloads",
-            'message': "Malicious payloads detected",
-        })
-
-    placed_date = datetime.now()
-    formatted_placed_date = placed_date.strftime('%B %d, %Y')
-    user_id = session['id']
-    parsed_time = scheduled_time.split()
-    print(parsed_time)
-    booked_doctordates = Availability.query.filter_by(doctor_id=booked_doctorid).all()
-    day_map = {
-        'Monday': 0,
-        'Tuesday':1,
-        'Wednesday':2,
-        'Thursday': 3,
-        'Friday': 4,
-        'Saturday': 5,
-        'Sunday': 6
-        
-        
-    }
-    current_day = datetime.now()
-    current_weekday = current_day.weekday()
-    scheduled_weekday = day_map[parsed_time[0]]
-    if current_weekday <= scheduled_weekday:
-            difference = scheduled_weekday - current_weekday
-    else:
-            difference = 7 - (current_weekday - scheduled_weekday)
-
-    scheduled_date = current_day + timedelta(days=difference)
-    formatted_scheduled_date = f"{scheduled_date.strftime('%B %d, %Y')} at {parsed_time[2]} "
-        
-
-
+    csrf_token = request.form['csrf_token']
+    if csrf_token == session['csrf_token']:
+        scheduler_name = firewall.santitize_input(request.form['book-patient-name'])
+        if firewall.identify_payloads(scheduler_name) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+            })
+        booking_reason = firewall.santitize_input(request.form['book-reason'])
+        if firewall.identify_payloads(booking_reason) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+            })
+        booked_doctorid = firewall.santitize_input(request.form['chosen-doctor-id'])
+        if firewall.identify_payloads(booked_doctorid) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+            })
     
-   # for date in booked_doctordates:
+        requested_doctor = Doctor.query.filter_by(id=booked_doctorid).first()
+        booked_doctorname = requested_doctor.doctor_name
+        scheduled_time = firewall.santitize_input(request.form['scheduled-time'])
+        if firewall.identify_payloads(scheduled_time) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+            })
 
-        #if parsed_time[0] == date.day and parsed_time[2] == date.time:
-            #date.is_booked = 0
-            #db.session.commit()
-    
+        placed_date = datetime.now()
+        formatted_placed_date = placed_date.strftime('%B %d, %Y')
+        user_id = session['id']
+        parsed_time = scheduled_time.split()
+        print(parsed_time)
+        booked_doctordates = Availability.query.filter_by(doctor_id=booked_doctorid).all()
+        day_map = {
+            'Monday': 0,
+            'Tuesday':1,
+            'Wednesday':2,
+            'Thursday': 3,
+            'Friday': 4,
+            'Saturday': 5,
+            'Sunday': 6
+            
+            
+        }
+        current_day = datetime.now()
+        current_weekday = current_day.weekday()
+        scheduled_weekday = day_map[parsed_time[0]]
+        if current_weekday <= scheduled_weekday:
+                difference = scheduled_weekday - current_weekday
+        else:
+                difference = 7 - (current_weekday - scheduled_weekday)
+
+        scheduled_date = current_day + timedelta(days=difference)
+        formatted_scheduled_date = f"{scheduled_date.strftime('%B %d, %Y')} at {parsed_time[2]} "
+            
+
+
+        
+    # for date in booked_doctordates:
+
+            #if parsed_time[0] == date.day and parsed_time[2] == date.time:
+                #date.is_booked = 0
+                #db.session.commit()
+        
 
 
 
 
-    new_booking = Booking(booking_reason=booking_reason, scheduled_time=scheduled_time, booking_placed=placed_date, booked_doctor=booked_doctorname, booked_doctorid=booked_doctorid, scheduler=scheduler_name, user_id=user_id)
-    db.session.add(new_booking)
-    db.session.commit()
-    html_content = render_template('booking_confirm_email.html', date_placed=formatted_placed_date, doctor_name=booked_doctorname, scheduled_time=formatted_scheduled_date, first_name=session['first_name'], last_name=session['last_name'])
-    subject =f"Your Appointment Was Scheduled Successfully, {session['first_name']}"
-    send_confirmation_email(html_content, session['email'], subject)
+        new_booking = Booking(booking_reason=booking_reason, scheduled_time=scheduled_time, booking_placed=placed_date, booked_doctor=booked_doctorname, booked_doctorid=booked_doctorid, scheduler=scheduler_name, user_id=user_id)
+        db.session.add(new_booking)
+        db.session.commit()
+        html_content = render_template('booking_confirm_email.html', date_placed=formatted_placed_date, doctor_name=booked_doctorname, scheduled_time=formatted_scheduled_date, first_name=session['first_name'], last_name=session['last_name'])
+        subject =f"Your Appointment Was Scheduled Successfully, {session['first_name']}"
+        send_confirmation_email(html_content, session['email'], subject)
 
-    return jsonify ({
-        'status': 200,
-        'success': True,
-        'message': "Your Appointment has been scheduled successfully",
+        return jsonify ({
+            'status': 200,
+            'success': True,
+            'message': "Your Appointment has been scheduled successfully",
 
-    })
+        })
+    else: 
+        return jsonify({
+            'error': True,
+            'message': "Issue with verifying CSRF Token.",
+        })
 
 
 
@@ -685,50 +692,58 @@ def cancel_booking():
             'status':429,
             'message': "Too Many Requests",
         })
-    cancelled_booking = request.form['cancelled-appoint-id']
-    cancel_booking = Booking.query.filter_by(id=cancelled_booking).first()
-    scheduled_time = cancel_booking.scheduled_time
-    parsed_time = scheduled_time.split()
+    crsf_token = request.form['csrf_token']
+    if csrf_token == session['csrf_token']:
 
-    day_map = {
-        'Monday': 0,
-        'Tuesday':1,
-        'Wednesday':2,
-        'Thursday': 3,
-        'Friday': 4,
-        'Saturday': 5,
-        'Sunday': 6
-        
-        
-    }
-    current_day = datetime.now()
-    current_weekday = current_day.weekday()
-    scheduled_weekday = day_map[parsed_time[0]]
-    if current_weekday <= scheduled_weekday:
-            difference = scheduled_weekday - current_weekday
+        cancelled_booking = request.form['cancelled-appoint-id']
+        cancel_booking = Booking.query.filter_by(id=cancelled_booking).first()
+        scheduled_time = cancel_booking.scheduled_time
+        parsed_time = scheduled_time.split()
+
+        day_map = {
+            'Monday': 0,
+            'Tuesday':1,
+            'Wednesday':2,
+            'Thursday': 3,
+            'Friday': 4,
+            'Saturday': 5,
+            'Sunday': 6
+            
+            
+        }
+        current_day = datetime.now()
+        current_weekday = current_day.weekday()
+        scheduled_weekday = day_map[parsed_time[0]]
+        if current_weekday <= scheduled_weekday:
+                difference = scheduled_weekday - current_weekday
+        else:
+                difference = 7 - (current_weekday - scheduled_weekday)
+
+        scheduled_date = current_day + timedelta(days=difference)
+        formatted_scheduled_date = f"{scheduled_date.strftime('%B %d, %Y')} at {parsed_time[2]} "
+            
+
+
+    
+        cancel_booking.is_cancelled = 1
+        db.session.commit()
+
+        html_content = render_template('booking_cancel_email.html', doctor_name=cancel_booking.booked_doctor, scheduled_time=formatted_scheduled_date, first_name=session['first_name'], last_name=session['last_name'])
+        subject =f"Your Appointment With Dr. {cancel_booking.booked_doctor} Was Cancelled"
+        send_confirmation_email(html_content, session['email'], subject)
+
+
+    
+        return jsonify ({
+            'status': 200,
+            'success': True,
+            'message': "Your Appointment was Cancelled Successfully!",
+        })
     else:
-            difference = 7 - (current_weekday - scheduled_weekday)
-
-    scheduled_date = current_day + timedelta(days=difference)
-    formatted_scheduled_date = f"{scheduled_date.strftime('%B %d, %Y')} at {parsed_time[2]} "
-        
-
-
-   
-    cancel_booking.is_cancelled = 1
-    db.session.commit()
-
-    html_content = render_template('booking_cancel_email.html', doctor_name=cancel_booking.booked_doctor, scheduled_time=formatted_scheduled_date, first_name=session['first_name'], last_name=session['last_name'])
-    subject =f"Your Appointment With Dr. {cancel_booking.booked_doctor} Was Cancelled"
-    send_confirmation_email(html_content, session['email'], subject)
-
-
-   
-    return jsonify ({
-        'status': 200,
-        'success': True,
-        'message': "Your Appointment was Cancelled Successfully!",
-    })
+        return jsonify ({
+            'error': True,
+            'message': "Issue with verifying CSRF Token",
+        })
 
 
 @app.route('/account_management')
@@ -766,34 +781,41 @@ def change_email():
             'status':429,
             'message': "Too Many Requests",
         })
-    user_id = session['id']
-    changed_email = firewall.santitize_input(request.form['user-change-email'])
-    updated_user = User.query.filter_by(id=user_id).first()
-    if updated_user:
-        try:
-            updated_user.email = changed_email
-            db.session.commit()
-           
+    csrf_token = request.form['csrf_token']
+    if csrf_token == session['csrf_token']:
+        user_id = session['id']
+        changed_email = firewall.santitize_input(request.form['user-change-email'])
+        updated_user = User.query.filter_by(id=user_id).first()
+        if updated_user:
+            try:
+                updated_user.email = changed_email
+                db.session.commit()
+            
 
-        except IntegrityError:
+            except IntegrityError:
+                return jsonify ({
+                    'status': 400,
+                    'success': False,
+                    'message': "Email Already Exists",
+                })
+            html_content = render_template('email_change_confirm.html', first_name=session['first_name'], last_name=session['last_name'])
+            subject =f"Your Email Was Change Successfully, {session['first_name']}"
+            send_confirmation_email(html_content, changed_email, subject)
+
             return jsonify ({
                 'status': 400,
-                'success': False,
-                'message': "Email Already Exists",
+                'success': True,
+                'message': "Your email has been updated successfully",
             })
-        html_content = render_template('email_change_confirm.html', first_name=session['first_name'], last_name=session['last_name'])
-        subject =f"Your Email Was Change Successfully, {session['first_name']}"
-        send_confirmation_email(html_content, changed_email, subject)
-
-        return jsonify ({
-            'status': 400,
-            'success': True,
-            'message': "Your email has been updated successfully",
+        return jsonify({
+            'success': False,
+            'message': "An error occurred while attempting to change your email address, please try again.",
         })
-    return jsonify({
-        'success': False,
-        'message': "An error occurred while attempting to change your email address, please try again.",
-    })
+    else:
+        return jsonify ({
+            'error': True,
+            'message': "Issue with verifying CSRF Token",
+        })
 
 @app.route('/change_password', methods=['POST', 'GET'])
 def change_password():
@@ -802,54 +824,63 @@ def change_password():
             'status':429,
             'message': "Too Many Requests",
         })
-    user_id = session['id']
-    old_password = firewall.santitize_input(request.form['user-old-password'])
-    if firewall.identify_payloads(old_password) == 403:
-        return jsonify({
-            'status':403,
-            'offense': "Payloads",
-            'message': "Malicious payloads detected",
-        })
-    new_password = firewall.santitize_input(request.form['user-new-password'])
-    if firewall.identify_payloads(new_password) == 403:
-        return jsonify({
-            'status':403,
-            'offense': "Payloads",
-            'message': "Malicious payloads detected",
-        })
-    confirmed_change = firewall.santitize_input(request.form['confirm-new-password'])
-    if firewall.identify_payloads(confirmed_change) == 403:
-        return jsonify({
-            'status':403,
-            'offense': "Payloads",
-            'message': "Malicious payloads detected",
-        })
-    updated_user = User.query.filter_by(id=user_id).first()
-    if updated_user:
-        try:
-            ph.verify(updated_user.hashed_password, old_password)
-            if new_password == confirmed_change:
-                new_hashed = ph.hash(new_password)
-                updated_user.hashed_password = new_hashed
-                db.session.commit()
-            else:
+    csrf_token = request.form['csrf_token']
+    if csrf_token == session['csrf_token']:
+
+        user_id = session['id']
+        old_password = firewall.santitize_input(request.form['user-old-password'])
+        if firewall.identify_payloads(old_password) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+            })
+        new_password = firewall.santitize_input(request.form['user-new-password'])
+        if firewall.identify_payloads(new_password) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+            })
+        confirmed_change = firewall.santitize_input(request.form['confirm-new-password'])
+        if firewall.identify_payloads(confirmed_change) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+            })
+        updated_user = User.query.filter_by(id=user_id).first()
+        if updated_user:
+            try:
+                ph.verify(updated_user.hashed_password, old_password)
+                if new_password == confirmed_change:
+                    new_hashed = ph.hash(new_password)
+                    updated_user.hashed_password = new_hashed
+                    db.session.commit()
+                else:
+                    return jsonify ({
+                        'success': False, 
+                        'message': "Passwords do not match.",
+                    })
+            except VerifyMismatchError:
                 return jsonify ({
-                    'success': False, 
-                    'message': "Passwords do not match.",
+                    'success': False,
+                    'message': "Previous password is incorrect",
                 })
-        except VerifyMismatchError:
+                
+            html_content = render_template('password_change_confirm.html', first_name=session['first_name'], last_name=session['last_name'])
+            subject =f"Your Password Was Change Successfully, {session['first_name']}"
+            send_confirmation_email(html_content, session['email'], subject)
             return jsonify ({
-                'success': False,
-                'message': "Previous password is incorrect",
+                'success': True, 
+                'message': "Your password has been updated successfully",
+            })
+    else:
+        return jsonify({
+                'error': True,
+                'message': "Issue wirh verifying CSRF Token",
             })
             
-        html_content = render_template('password_change_confirm.html', first_name=session['first_name'], last_name=session['last_name'])
-        subject =f"Your Password Was Change Successfully, {session['first_name']}"
-        send_confirmation_email(html_content, session['email'], subject)
-        return jsonify ({
-            'success': True, 
-            'message': "Your password has been updated successfully",
-        })
     
 
 @app.route('/confirm_delete', methods=['POST', 'GET'])
@@ -859,46 +890,53 @@ def confirm_delete():
             'status':429,
             'message': "Too Many Requests",
         })
-    user_id = session['id']
-    email = firewall.santitize_input(request.form['delete-email'])
-    if firewall.identify_payloads(email) == 403:
-        return jsonify({
-            'status':403,
-            'offense': "Payloads",
-            'message': "Malicious payloads detected",
-        })
-    password = firewall.santitize_input(request.form['delete-password'])
-    if firewall.identify_payloads(password) == 403:
-        return jsonify({
-            'status':403,
-            'offense': "Payloads",
-            'message': "Malicious payloads detected",
-        })
-    deleted_user = User.query.filter_by(id=user_id).first()
-    if deleted_user:
-        if deleted_user.email == email:
-            try:
-                ph.verify(deleted_user.hashed_password, password)
-                deleted_user.is_deleted = 1
-                db.session.commit()
-                user_bookings = Booking.query.filter_by(user_id=user_id).all()
-                for booking in user_bookings:
-                    db.session.delete(booking)
-                    db.session.commit()
-            except VerifyMismatchError:
-                return jsonify ({
-                    'success': False,
-                    'message': "Incorrect Login Information",
-                })
-            html_content = render_template('delete_account_confirm.html', first_name=session['first_name'], last_name=session['last_name'])
-            subject =f"We're Sorry to See You Go, {session['first_name']}"
-            send_confirmation_email(html_content, session['email'], subject)
-            session.clear()
+    csrf_token = request.form['csrf_token']
+    if csrf_token == session['csrf_token']:
+        user_id = session['id']
+        email = firewall.santitize_input(request.form['delete-email'])
+        if firewall.identify_payloads(email) == 403:
             return jsonify({
-                'success': True,
-                'message': "Your account has been deleted successfully",
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
             })
-                
+        password = firewall.santitize_input(request.form['delete-password'])
+        if firewall.identify_payloads(password) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+            })
+        deleted_user = User.query.filter_by(id=user_id).first()
+        if deleted_user:
+            if deleted_user.email == email:
+                try:
+                    ph.verify(deleted_user.hashed_password, password)
+                    deleted_user.is_deleted = 1
+                    db.session.commit()
+                    user_bookings = Booking.query.filter_by(user_id=user_id).all()
+                    for booking in user_bookings:
+                        db.session.delete(booking)
+                        db.session.commit()
+                except VerifyMismatchError:
+                    return jsonify ({
+                        'success': False,
+                        'message': "Incorrect Login Information",
+                    })
+                html_content = render_template('delete_account_confirm.html', first_name=session['first_name'], last_name=session['last_name'])
+                subject =f"We're Sorry to See You Go, {session['first_name']}"
+                send_confirmation_email(html_content, session['email'], subject)
+                session.clear()
+                return jsonify({
+                    'success': True,
+                    'message': "Your account has been deleted successfully",
+                })
+    else: 
+        return jsonify({
+            'error': True,
+            'message': "Issue with verifying CSRF Token",
+        })
+                    
 
 
 
@@ -1050,60 +1088,67 @@ def admin_users():
             'status':429,
             'message': "Too Many Requests",
         })
-    changed_first = firewall.santitize_input(request.form['edit-firstname'])
-    if firewall.identify_payloads(changed_first) == 403:
-        return jsonify({
-            'status':403,
-            'offense': "Payloads",
-            'message': "Malicious payloads detected",
-        })
-    changed_last = firewall.santitize_input(request.form['edit-lastname'])
-    if firewall.identify_payloads(changed_last) == 403:
-        return jsonify({
-            'status':403,
-            'offense': "Payloads",
-            'message': "Malicious payloads detected",
-        })
-    changed_email = firewall.santitize_input(request.form['edit-user-email'])
-    if firewall.identify_payloads(changed_email) == 403:
-        return jsonify({
-            'status':403,
-            'offense': "Payloads",
-            'message': "Malicious payloads detected",
-        })
-    changed_role = firewall.santitize_input(request.form['edit-role'])
-    if firewall.identify_payloads(changed_role) == 403:
-        return jsonify({
-            'status':403,
-            'offense': "Payloads",
-            'message': "Malicious payloads detected",
-        })
-    user_id = firewall.santitize_input(request.form['edited-userid'])
-    if firewall.identify_payloads(user_id) == 403:
-        return jsonify({
-            'status':403,
-            'offense': "Payloads",
-            'message': "Malicious payloads detected",
-        })
-   
+    csrf_token = request.form['csrf_token']
+    if csrf_token == session['csrf_token']:
+        changed_first = firewall.santitize_input(request.form['edit-firstname'])
+        if firewall.identify_payloads(changed_first) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+            })
+        changed_last = firewall.santitize_input(request.form['edit-lastname'])
+        if firewall.identify_payloads(changed_last) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+            })
+        changed_email = firewall.santitize_input(request.form['edit-user-email'])
+        if firewall.identify_payloads(changed_email) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+            })
+        changed_role = firewall.santitize_input(request.form['edit-role'])
+        if firewall.identify_payloads(changed_role) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+            })
+        user_id = firewall.santitize_input(request.form['edited-userid'])
+        if firewall.identify_payloads(user_id) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+            })
+    
 
-    user_to_change = User.query.filter_by(id=user_id).first()
-   
-   
-    if user_to_change:
-        if changed_first:
-            user_to_change.first_name = changed_first
-        if changed_last:
-            user_to_change.last_name = changed_last
-        if changed_email:
-            user_to_change.email = changed_email
-        if changed_role:
-            user_to_change.role = changed_role
-        db.session.commit()
+        user_to_change = User.query.filter_by(id=user_id).first()
+    
+    
+        if user_to_change:
+            if changed_first:
+                user_to_change.first_name = changed_first
+            if changed_last:
+                user_to_change.last_name = changed_last
+            if changed_email:
+                user_to_change.email = changed_email
+            if changed_role:
+                user_to_change.role = changed_role
+            db.session.commit()
 
+            return jsonify({
+                'success': True,
+                'message': 'User Info Change Successfully',
+            })
+    else:
         return jsonify({
-            'success': True,
-            'message': 'User Info Change Successfully',
+            'error': True,
+            'message': "Issue with verifying CSRF Token",
         })
 
 
@@ -1119,57 +1164,63 @@ def admin_doctors():
             'status':429,
             'message': "Too Many Requests",
         })
-    changed_name = firewall.santitize_input(request.form['edit-doctor-name'])
-    if firewall.identify_payloads(changed_name) == 403:
+    csrf_token = request.form['csrf_token']
+    if csrf_token == session['csrf_token']:
+        changed_name = firewall.santitize_input(request.form['edit-doctor-name'])
+        if firewall.identify_payloads(changed_name) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+            })
+        changed_contact = firewall.santitize_input(request.form['edit-doctor-email'])
+        if firewall.identify_payloads(changed_contact) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+            })
+        changed_field = firewall.santitize_input(request.form['edit-doctor-field'])
+        if firewall.identify_payloads(changed_field) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+            })
+        changed_photo = firewall.santitize_input(request.form['edit-doctor-photo'])
+        if firewall.identify_payloads(changed_photo) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+            })
+        doctor_id = firewall.santitize_input(request.form['edited-doctorid'])
+        if firewall.identify_payloads(doctor_id) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+            })
+        doctor_to_change = Doctor.query.filter_by(id=doctor_id).first()
+        if doctor_to_change:
+            if changed_name:
+                doctor_to_change.doctor_name = changed_name
+            if changed_contact:
+                doctor_to_change.contact_emai = changed_contact
+            if changed_field:
+                doctor_to_change.field = changed_field
+            if changed_photo:
+                doctor_to_change.headshot = changed_photo
+            db.session.commit()
+            return jsonify ({
+                'success': True,
+                'message': 'Doctor change has been submitted successfully'
+            })
+    else: 
         return jsonify({
-            'status':403,
-            'offense': "Payloads",
-            'message': "Malicious payloads detected",
-        })
-    changed_contact = firewall.santitize_input(request.form['edit-doctor-email'])
-    if firewall.identify_payloads(changed_contact) == 403:
-        return jsonify({
-            'status':403,
-            'offense': "Payloads",
-            'message': "Malicious payloads detected",
-        })
-    changed_field = firewall.santitize_input(request.form['edit-doctor-field'])
-    if firewall.identify_payloads(changed_field) == 403:
-        return jsonify({
-            'status':403,
-            'offense': "Payloads",
-            'message': "Malicious payloads detected",
-        })
-    changed_photo = firewall.santitize_input(request.form['edit-doctor-photo'])
-    if firewall.identify_payloads(changed_photo) == 403:
-        return jsonify({
-            'status':403,
-            'offense': "Payloads",
-            'message': "Malicious payloads detected",
-        })
-    doctor_id = firewall.santitize_input(request.form['edited-doctorid'])
-    if firewall.identify_payloads(doctor_id) == 403:
-        return jsonify({
-            'status':403,
-            'offense': "Payloads",
-            'message': "Malicious payloads detected",
-        })
-    doctor_to_change = Doctor.query.filter_by(id=doctor_id).first()
-    if doctor_to_change:
-        if changed_name:
-            doctor_to_change.doctor_name = changed_name
-        if changed_contact:
-            doctor_to_change.contact_emai = changed_contact
-        if changed_field:
-            doctor_to_change.field = changed_field
-        if changed_photo:
-            doctor_to_change.headshot = changed_photo
-        db.session.commit()
-        return jsonify ({
-            'success': True,
-            'message': 'Doctor change has been submitted successfully'
-        })
-    
+            'error': True,
+            'message': "Issue with verifying CSRF Token",
+        })   
 @app.route('/admin_avail', methods=['POST', 'GET'])
 def admin_avail():
     if firewall.rate_limiter() == 429:
@@ -1177,40 +1228,46 @@ def admin_avail():
             'status':429,
             'message': "Too Many Requests",
         })
-    changed_day = firewall.santitize_input(request.form['edit-day'])
-    if firewall.identify_payloads(changed_day) == 403:
-        return jsonify({
-            'status':403,
-            'offense': "Payloads",
-            'message': "Malicious payloads detected",
-        })
-    changed_time = firewall.santitize_input(request.form['edit-time'])
-    if firewall.identify_payloads(changed_time) == 403:
-        return jsonify({
-            'status':403,
-            'offense': "Payloads",
-            'message': "Malicious payloads detected",
-        })
-    avail_id = firewall.santitize_input(request.form['edited-availid'])
-    if firewall.identify_payloads(avail_id) == 403:
-        return jsonify({
-            'status':403,
-            'offense': "Payloads",
-            'message': "Malicious payloads detected",
-        })
-    avail_to_change = Availability.query.filter_by(id=avail_id).first()
-    if avail_to_change:
-        if changed_day:
-            avail_to_change.day = changed_day
-        if changed_time:
-            avail_to_change.time = changed_time
+    csrf_token = request.form['csrf_token']
+    if csrf_token == session['csrf_token']:
+        changed_day = firewall.santitize_input(request.form['edit-day'])
+        if firewall.identify_payloads(changed_day) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+            })
+        changed_time = firewall.santitize_input(request.form['edit-time'])
+        if firewall.identify_payloads(changed_time) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+            })
+        avail_id = firewall.santitize_input(request.form['edited-availid'])
+        if firewall.identify_payloads(avail_id) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+            })
+        avail_to_change = Availability.query.filter_by(id=avail_id).first()
+        if avail_to_change:
+            if changed_day:
+                avail_to_change.day = changed_day
+            if changed_time:
+                avail_to_change.time = changed_time
 
-        db.session.commit()
-        return jsonify({
-            'success': True,
-            'message': "Availability Update Successfully",
+            db.session.commit()
+            return jsonify({
+                'success': True,
+                'message': "Availability Update Successfully",
+            })
+    else:
+        return jsonify ({
+            'error': True,
+            'message': "Issue with verifying CSRF Token"
         })
-    
 
 @app.route('/admin_add_user', methods=['POST', 'GET'])
 def admin_add_user():
@@ -1219,73 +1276,81 @@ def admin_add_user():
             'status':429,
             'message': "Too Many Requests",
         })
-    try:
-        new_first_name = firewall.santitize_input(request.form['add-firstname'])
-        if firewall.identify_payloads(new_first_name) == 403:
-            return jsonify({
-                'status':403,
-                'offense': "Payloads",
-                'message': "Malicious payloads detected",
-        })
-        new_last_name = firewall.santitize_input(request.form['add-lastname'])
-        if firewall.identify_payloads(new_last_name) == 403:
-            return jsonify({
-                'status':403,
-                'offense': "Payloads",
-                'message': "Malicious payloads detected",
-        })
-        new_email = firewall.santitize_input(request.form['add-useremail'].lower())
-        if firewall.identify_payloads(new_email) == 403:
-            return jsonify({
-                'status':403,
-                'offense': "Payloads",
-                'message': "Malicious payloads detected",
-        })
-        new_password = firewall.santitize_input(request.form['add-password'])
-        if firewall.identify_payloads(new_password) == 403:
-            return jsonify({
-                'status':403,
-                'offense': "Payloads",
-                'message': "Malicious payloads detected",
-        })
-        
-        confirm_password = firewall.santitize_input(request.form['confirm-password'])
-        if firewall.identify_payloads(confirm_password) == 403:
-            return jsonify({
-                'status':403,
-                'offense': "Payloads",
-                'message': "Malicious payloads detected",
-        })
-        if new_password == confirm_password:
-            new_password = ph.hash(new_password)
-        else:
-            return jsonify({
-                'success':False,
-                'message': 'Passwords do not match'
+    csrf_token = request.form['csrf_token']
+    if csrf_token == session['csrf_token']:
+        try:
+            
+            new_first_name = firewall.santitize_input(request.form['add-firstname'])
+            if firewall.identify_payloads(new_first_name) == 403:
+                return jsonify({
+                    'status':403,
+                    'offense': "Payloads",
+                    'message': "Malicious payloads detected",
             })
+            new_last_name = firewall.santitize_input(request.form['add-lastname'])
+            if firewall.identify_payloads(new_last_name) == 403:
+                return jsonify({
+                    'status':403,
+                    'offense': "Payloads",
+                    'message': "Malicious payloads detected",
+            })
+            new_email = firewall.santitize_input(request.form['add-useremail'].lower())
+            if firewall.identify_payloads(new_email) == 403:
+                return jsonify({
+                    'status':403,
+                    'offense': "Payloads",
+                    'message': "Malicious payloads detected",
+            })
+            new_password = firewall.santitize_input(request.form['add-password'])
+            if firewall.identify_payloads(new_password) == 403:
+                return jsonify({
+                    'status':403,
+                    'offense': "Payloads",
+                    'message': "Malicious payloads detected",
+            })
+            
+            confirm_password = firewall.santitize_input(request.form['confirm-password'])
+            if firewall.identify_payloads(confirm_password) == 403:
+                return jsonify({
+                    'status':403,
+                    'offense': "Payloads",
+                    'message': "Malicious payloads detected",
+            })
+            if new_password == confirm_password:
+                new_password = ph.hash(new_password)
+            else:
+                return jsonify({
+                    'success':False,
+                    'message': 'Passwords do not match'
+                })
+            
+            new_role = request.form['add-role'] or "User"
+            is_verified = 1
         
-        new_role = request.form['add-role'] or "User"
-        is_verified = 1
-       
-        
-        join_date = datetime.now()
+            
+            join_date = datetime.now()
 
-        new_user = User(first_name=new_first_name, last_name=new_last_name, email=new_email, hashed_password=new_password, role=new_role, join_date=join_date, is_verified=is_verified)
+            new_user = User(first_name=new_first_name, last_name=new_last_name, email=new_email, hashed_password=new_password, role=new_role, join_date=join_date, is_verified=is_verified)
 
-        db.session.add(new_user)
-        db.session.commit()
-    except IntegrityError:
+            db.session.add(new_user)
+            db.session.commit()
+        except IntegrityError:
+            return jsonify ({
+                'success': False,
+                'message': 'User Already Exists',
+
+            })
+
+
         return jsonify ({
-            'success': False,
-            'message': 'User Alread Exists',
-
+            'success': True,
+            'message': 'User Added Successfully'
         })
-
-
-    return jsonify ({
-        'success': True,
-        'message': 'User Added Successfully'
-    })
+    else:
+        return jsonify({
+            'error':True,
+            'message': "Issue with verifying CSRF Token"
+        })
 
 @app.route('/admin_add_doctor', methods=['POST', 'GET'])
 def admin_add_doctor():
@@ -1294,44 +1359,51 @@ def admin_add_doctor():
             'status':429,
             'message': "Too Many Requests",
         })
-    new_doctor_name = firewall.santitize_input(request.form['add-doctorname'])
-    if firewall.identify_payloads(new_doctor_name) == 403:
-            return jsonify({
-                'status':403,
-                'offense': "Payloads",
-                'message': "Malicious payloads detected",
-        })
-    new_doctor_email = firewall.santitize_input(request.form['add-doctoremail'])
-    if firewall.identify_payloads(new_doctor_email) == 403:
-            return jsonify({
-                'status':403,
-                'offense': "Payloads",
-                'message': "Malicious payloads detected",
-        })
-    new_doctor_field = firewall.santitize_input(request.form['add-doctorfield'])
-    if firewall.identify_payloads(new_doctor_field) == 403:
-            return jsonify({
-                'status':403,
-                'offense': "Payloads",
-                'message': "Malicious payloads detected",
-        })
-    new_doctor_headshot =  firewall.santitize_input(request.form['add-headshot'])
-    if firewall.identify_payloads(new_doctor_headshot) == 403:
-            return jsonify({
-                'status':403,
-                'offense': "Payloads",
-                'message': "Malicious payloads detected",
-        })
-    
-    new_doctor = Doctor(doctor_name=new_doctor_name, contact_email=new_doctor_email, field=new_doctor_field, headshot=new_doctor_headshot)
-    db.session.add(new_doctor)
-    db.session.commit()
+    csrf_token = request.form['csrf_token']
+    if csrf_token == session['csrf_token']:
+        new_doctor_name = firewall.santitize_input(request.form['add-doctorname'])
+        if firewall.identify_payloads(new_doctor_name) == 403:
+                return jsonify({
+                    'status':403,
+                    'offense': "Payloads",
+                    'message': "Malicious payloads detected",
+            })
+        new_doctor_email = firewall.santitize_input(request.form['add-doctoremail'])
+        if firewall.identify_payloads(new_doctor_email) == 403:
+                return jsonify({
+                    'status':403,
+                    'offense': "Payloads",
+                    'message': "Malicious payloads detected",
+            })
+        new_doctor_field = firewall.santitize_input(request.form['add-doctorfield'])
+        if firewall.identify_payloads(new_doctor_field) == 403:
+                return jsonify({
+                    'status':403,
+                    'offense': "Payloads",
+                    'message': "Malicious payloads detected",
+            })
+        new_doctor_headshot =  firewall.santitize_input(request.form['add-headshot'])
+        if firewall.identify_payloads(new_doctor_headshot) == 403:
+                return jsonify({
+                    'status':403,
+                    'offense': "Payloads",
+                    'message': "Malicious payloads detected",
+            })
+        
+        new_doctor = Doctor(doctor_name=new_doctor_name, contact_email=new_doctor_email, field=new_doctor_field, headshot=new_doctor_headshot)
+        db.session.add(new_doctor)
+        db.session.commit()
 
-    return jsonify({
-        'success': True,
-        'message': 'Doctor Added Successfully',
+        return jsonify({
+            'success': True,
+            'message': 'Doctor Added Successfully',
 
-    })
+        })
+    else:
+        return jsonify({
+            'error':True,
+            'message': "Issue with verifying CSRF Token"
+        })
 
 
 @app.route('/admin_add_avail', methods=['POST', 'GET'])
@@ -1341,36 +1413,44 @@ def admin_add_avail():
             'status':429,
             'message': "Too Many Requests",
         })
-    doctor_id = firewall.santitize_input(request.form['add-availdoctor'])
-    if firewall.identify_payloads(doctor_id) == 403:
-            return jsonify({
-                'status':403,
-                'offense': "Payloads",
-                'message': "Malicious payloads detected",
-        })
-    new_day = firewall.santitize_input(request.form['add-day'])
-    if firewall.identify_payloads(new_day) == 403:
-            return jsonify({
-                'status':403,
-                'offense': "Payloads",
-                'message': "Malicious payloads detected",
-        })
-    new_time = firewall.santitize_input(request.form['add-time'])
-    if firewall.identify_payloads(new_time) == 403:
-            return jsonify({
-                'status':403,
-                'offense': "Payloads",
-                'message': "Malicious payloads detected",
-        })
+    csrf_token = request.form['csrf_token']
+    if csrf_token == session['csrf_token']:
 
-    new_avail = Availability(doctor_id=doctor_id, day=new_day, time=new_time)
-    db.session.add(new_avail)
-    db.session.commit()
+        doctor_id = firewall.santitize_input(request.form['add-availdoctor'])
+        if firewall.identify_payloads(doctor_id) == 403:
+                return jsonify({
+                    'status':403,
+                    'offense': "Payloads",
+                    'message': "Malicious payloads detected",
+            })
+        new_day = firewall.santitize_input(request.form['add-day'])
+        if firewall.identify_payloads(new_day) == 403:
+                return jsonify({
+                    'status':403,
+                    'offense': "Payloads",
+                    'message': "Malicious payloads detected",
+            })
+        new_time = firewall.santitize_input(request.form['add-time'])
+        if firewall.identify_payloads(new_time) == 403:
+                return jsonify({
+                    'status':403,
+                    'offense': "Payloads",
+                    'message': "Malicious payloads detected",
+            })
 
-    return jsonify({
-        'success': True,
-        'message': "Availability added successfully",
-    })
+        new_avail = Availability(doctor_id=doctor_id, day=new_day, time=new_time)
+        db.session.add(new_avail)
+        db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'message': "Availability added successfully",
+        })
+    else:
+        return jsonify({
+            'error':True,
+            'message': "Issue with verifying CSRF Token"
+        })
 
 @app.route('/admin_delete_user', methods=['POST', 'GET'])
 def admin_delete_user():
@@ -1379,48 +1459,63 @@ def admin_delete_user():
             'status':429,
             'message': "Too Many Requests",
         })
-    deleted_user_id = firewall.santitize_input(request.form['deleted-userid'])
-    if firewall.identify_payloads(deleted_user_id) == 403:
-            return jsonify({
-                'status':403,
-                'offense': "Payloads",
-                'message': "Malicious payloads detected",
-        })
-    deleted_user = User.query.filter_by(id=deleted_user_id).first()
-    if deleted_user:
-        deleted_user.is_deleted = 1
-        db.session.commit()
+    csrf_token = request.form['csrf_token']
+    if csrf_token == session['csrf_token']:
+        deleted_user_id = firewall.santitize_input(request.form['deleted-userid'])
+        if firewall.identify_payloads(deleted_user_id) == 403:
+                return jsonify({
+                    'status':403,
+                    'offense': "Payloads",
+                    'message': "Malicious payloads detected",
+            })
+        deleted_user = User.query.filter_by(id=deleted_user_id).first()
+        if deleted_user:
+            deleted_user.is_deleted = 1
+            db.session.commit()
 
-    return jsonify({
-        'success': True,
-        'message': "User deleted successfully",
-    })
+        return jsonify({
+            'success': True,
+            'message': "User deleted successfully",
+        })
+    else:
+        return jsonify({
+            'error': True,
+            'message': "Issue with verifying CSRF Token"
+        })
         
 
 @app.route('/admin_delete_doctor', methods=['POST', 'GET'])
 def admin_delete_doctor():
+
     if firewall.rate_limiter() == 429:
         return jsonify ({
             'status':429,
             'message': "Too Many Requests",
         })
-    deleted_doctor_id = firewall.santitize_input(request.form['deleted-doctorid'])
-    if firewall.identify_payloads(deleted_doctor_id) == 403:
-            return jsonify({
-                'status':403,
-                'offense': "Payloads",
-                'message': "Malicious payloads detected",
+    csrf_token = request.form['csrf_token']
+    if csrf_token == session['csrf_token']:
+        deleted_doctor_id = firewall.santitize_input(request.form['deleted-doctorid'])
+        if firewall.identify_payloads(deleted_doctor_id) == 403:
+                return jsonify({
+                    'status':403,
+                    'offense': "Payloads",
+                    'message': "Malicious payloads detected",
+            })
+        deleted_doctor = Doctor.query.filter_by(id=deleted_doctor_id).first()
+        if deleted_doctor:
+            deleted_doctor.is_active = 0
+            db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'message': "Doctor deleted successfully",
+
         })
-    deleted_doctor = Doctor.query.filter_by(id=deleted_doctor_id).first()
-    if deleted_doctor:
-        deleted_doctor.is_active = 0
-        db.session.commit()
-
-    return jsonify({
-        'success': True,
-        'message': "Doctor deleted successfully",
-
-    })
+    else:
+        return jsonify({
+            'error': True,
+            'message': "Issue with verifying CSRF Token"
+        })
 
 
 @app.route('/admin_delete_appointment', methods=['POST', 'GET'])
@@ -1430,23 +1525,29 @@ def admin_delete_appointment():
             'status':429,
             'message': "Too Many Requests",
         })
-    deleted_appoint_id = firewall.santitize_input(request.form['deleted-appointid'])
-    if firewall.identify_payloads(deleted_appoint_id) == 403:
-            return jsonify({
-                'status':403,
-                'offense': "Payloads",
-                'message': "Malicious payloads detected",
+    csrf_token = request.form['csrf_token']
+    if csrf_token == session['csrf_token']:
+        deleted_appoint_id = firewall.santitize_input(request.form['deleted-appointid'])
+        if firewall.identify_payloads(deleted_appoint_id) == 403:
+                return jsonify({
+                    'status':403,
+                    'offense': "Payloads",
+                    'message': "Malicious payloads detected",
+            })
+        deleted_booking = Booking.query.filter_by(id=deleted_appoint_id).first()
+        if deleted_booking:
+            deleted_booking.is_cancelled = 1
+            db.session.commit()
+        return jsonify({
+            'success': True,
+            'message': "Appointment deleted successfully",
+
         })
-    deleted_booking = Booking.query.filter_by(id=deleted_appoint_id).first()
-    if deleted_booking:
-        deleted_booking.is_cancelled = 1
-        db.session.commit()
-    return jsonify({
-        'success': True,
-        'message': "Appointment deleted successfully",
-
-    })
-
+    else:
+        return jsonify({
+            'error': True,
+            'message': "Issue with verifying CSRF Token"
+        })
 
 @app.route('/admin_appointments', methods=['POST', 'GET'])
 def admin_appointments():
@@ -1455,62 +1556,68 @@ def admin_appointments():
             'status':429,
             'message': "Too Many Requests",
         })
-    changed_patient = firewall.santitize_input(request.form['edit-booking-patient'])
-    if firewall.identify_payloads(changed_patient) == 403:
-            return jsonify({
-                'status':403,
-                'offense': "Payloads",
-                'message': "Malicious payloads detected",
-        })
-    changed_booked_doctor = firewall.santitize_input(request.form['edit-booked-doctor'])
-    if firewall.identify_payloads(changed_booked_doctor) == 403:
-            return jsonify({
-                'status':403,
-                'offense': "Payloads",
-                'message': "Malicious payloads detected",
-        })
-    changed_date = firewall.santitize_input(request.form['edit-booking-date'])
-    if firewall.identify_payloads(changed_date) == 403:
-            return jsonify({
-                'status':403,
-                'offense': "Payloads",
-                'message': "Malicious payloads detected",
-        })
-    changed_booking_reason = firewall.santitize_input(request.form['edit-booking-reason'])
-    if firewall.identify_payloads(changed_booking_reason) == 403:
-            return jsonify({
-                'status':403,
-                'offense': "Payloads",
-                'message': "Malicious payloads detected",
-        })
-    changed_bookingid = firewall.santitize_input(request.form['edited-appointid'])
-    if firewall.identify_payloads(changed_bookingid) == 403:
-            return jsonify({
-                'status':403,
-                'offense': "Payloads",
-                'message': "Malicious payloads detected",
-        })
+    csrf_token = request.form['csrf_token']
+    if csrf_token == session['csrf_token']:
+        changed_patient = firewall.santitize_input(request.form['edit-booking-patient'])
+        if firewall.identify_payloads(changed_patient) == 403:
+                return jsonify({
+                    'status':403,
+                    'offense': "Payloads",
+                    'message': "Malicious payloads detected",
+            })
+        changed_booked_doctor = firewall.santitize_input(request.form['edit-booked-doctor'])
+        if firewall.identify_payloads(changed_booked_doctor) == 403:
+                return jsonify({
+                    'status':403,
+                    'offense': "Payloads",
+                    'message': "Malicious payloads detected",
+            })
+        changed_date = firewall.santitize_input(request.form['edit-booking-date'])
+        if firewall.identify_payloads(changed_date) == 403:
+                return jsonify({
+                    'status':403,
+                    'offense': "Payloads",
+                    'message': "Malicious payloads detected",
+            })
+        changed_booking_reason = firewall.santitize_input(request.form['edit-booking-reason'])
+        if firewall.identify_payloads(changed_booking_reason) == 403:
+                return jsonify({
+                    'status':403,
+                    'offense': "Payloads",
+                    'message': "Malicious payloads detected",
+            })
+        changed_bookingid = firewall.santitize_input(request.form['edited-appointid'])
+        if firewall.identify_payloads(changed_bookingid) == 403:
+                return jsonify({
+                    'status':403,
+                    'offense': "Payloads",
+                    'message': "Malicious payloads detected",
+            })
 
-    changed_booking = Booking.query.filter_by(id=changed_bookingid).first()
-    
-    if changed_booking:
+        changed_booking = Booking.query.filter_by(id=changed_bookingid).first()
+        
+        if changed_booking:
 
 
-        if changed_patient:
-            changed_booking.scheduler = changed_patient
-        if changed_booked_doctor:
-            changed_booking.booked_doctor = changed_booked_doctor
-        if changed_date:
-            changed_booking.scheduled_time = changed_date
-        if changed_booking_reason:
-            changed_booking.booking_reason = changed_booking_reason
+            if changed_patient:
+                changed_booking.scheduler = changed_patient
+            if changed_booked_doctor:
+                changed_booking.booked_doctor = changed_booked_doctor
+            if changed_date:
+                changed_booking.scheduled_time = changed_date
+            if changed_booking_reason:
+                changed_booking.booking_reason = changed_booking_reason
 
-        db.session.commit()
-    return jsonify ({
-        'success': True,
-        'message': "Appointment change completed successfully.",
-    })
-    
+            db.session.commit()
+        return jsonify ({
+            'success': True,
+            'message': "Appointment change completed successfully.",
+        })
+    else:
+        return jsonify({
+            'error': True,
+            'message': "Issue with verifying CSRF Token"
+        })   
 
 @app.route('/admin_add_appointment', methods=['POST', 'GET'])
 def admin_add_appointment():
@@ -1519,61 +1626,66 @@ def admin_add_appointment():
             'status':429,
             'message': "Too Many Requests",
         })
+    csrf_token = request.form['csrf_token']
+    if csrf_token == session['csrf_token']:
+        new_booking_reason = firewall.santitize_input(request.form['add-reason'])
+        if firewall.identify_payloads(new_booking_reason) == 403:
+                return jsonify({
+                    'status':403,
+                    'offense': "Payloads",
+                    'message': "Malicious payloads detected",
+            })
+        new_scheduled_time = firewall.santitize_input(request.form['add-booked-time'])
+        if firewall.identify_payloads(new_scheduled_time) == 403:
+                return jsonify({
+                    'status':403,
+                    'offense': "Payloads",
+                    'message': "Malicious payloads detected",
+            })
+        booking_placed = datetime.now()
+        new_booked_doctor = firewall.santitize_input(request.form['add-booked-doctor'])
+        if firewall.identify_payloads(new_booked_doctor) == 403:
+                return jsonify({
+                    'status':403,
+                    'offense': "Payloads",
+                    'message': "Malicious payloads detected",
+            })
+        new_booked_doctorid = firewall.santitize_input(request.form['add-doctorid'])
+        if firewall.identify_payloads(new_booked_doctorid) == 403:
+                return jsonify({
+                    'status':403,
+                    'offense': "Payloads",
+                    'message': "Malicious payloads detected",
+            })
+        user_id = firewall.santitize_input(request.form['add-userid'])
+        if firewall.identify_payloads(user_id) == 403:
+                return jsonify({
+                    'status':403,
+                    'offense': "Payloads",
+                    'message': "Malicious payloads detected",
+            })
+        new_scheduler = firewall.santitize_input(request.form['add-scheduler'])
+        if firewall.identify_payloads(new_scheduler) == 403:
+                return jsonify({
+                    'status':403,
+                    'offense': "Payloads",
+                    'message': "Malicious payloads detected",
+            })
 
-    new_booking_reason = firewall.santitize_input(request.form['add-reason'])
-    if firewall.identify_payloads(new_booking_reason) == 403:
-            return jsonify({
-                'status':403,
-                'offense': "Payloads",
-                'message': "Malicious payloads detected",
-        })
-    new_scheduled_time = firewall.santitize_input(request.form['add-booked-time'])
-    if firewall.identify_payloads(new_scheduled_time) == 403:
-            return jsonify({
-                'status':403,
-                'offense': "Payloads",
-                'message': "Malicious payloads detected",
-        })
-    booking_placed = datetime.now()
-    new_booked_doctor = firewall.santitize_input(request.form['add-booked-doctor'])
-    if firewall.identify_payloads(new_booked_doctor) == 403:
-            return jsonify({
-                'status':403,
-                'offense': "Payloads",
-                'message': "Malicious payloads detected",
-        })
-    new_booked_doctorid = firewall.santitize_input(request.form['add-doctorid'])
-    if firewall.identify_payloads(new_booked_doctorid) == 403:
-            return jsonify({
-                'status':403,
-                'offense': "Payloads",
-                'message': "Malicious payloads detected",
-        })
-    user_id = firewall.santitize_input(request.form['add-userid'])
-    if firewall.identify_payloads(user_id) == 403:
-            return jsonify({
-                'status':403,
-                'offense': "Payloads",
-                'message': "Malicious payloads detected",
-        })
-    new_scheduler = firewall.santitize_input(request.form['add-scheduler'])
-    if firewall.identify_payloads(new_scheduler) == 403:
-            return jsonify({
-                'status':403,
-                'offense': "Payloads",
-                'message': "Malicious payloads detected",
-        })
+        new_appoint = Booking(booking_reason=new_booking_reason, scheduled_time=new_scheduled_time, booking_placed=booking_placed, booked_doctor=new_booked_doctor, booked_doctorid=new_booked_doctorid, user_id=user_id, scheduler=new_scheduler)
+        db.session.add(new_appoint)
+        db.session.commit()
 
-    new_appoint = Booking(booking_reason=new_booking_reason, scheduled_time=new_scheduled_time, booking_placed=booking_placed, booked_doctor=new_booked_doctor, booked_doctorid=new_booked_doctorid, user_id=user_id, scheduler=new_scheduler)
-    db.session.add(new_appoint)
-    db.session.commit()
-
-    return jsonify({
-        'success': True,
-        'message': "Appointment Added Successfully",
-        
-    })
-
+        return jsonify({
+            'success': True,
+            'message': "Appointment Added Successfully",
+            
+        })
+    else:
+        return jsonify({
+            'error': True,
+            'message': "Issue with verifying CSRF Token"
+        })
 @app.route('/delete_deleted_users')
 def delete_deleted_users():
     deleted_users = User.query.filter_by(is_deleted=1).all()
@@ -1641,16 +1753,22 @@ def admin_delete_avail():
             'status':429,
             'message': "Too Many Requests",
         })
-    deleted_avail_id = request.form['deleted-availid']
-    deleted_avail = Availability.query.filter_by(id=deleted_avail_id).first()
-    if deleted_avail:
-        db.session.delete(deleted_avail)
-        db.session.commit()
-    return jsonify ({
-        'success': True,
-        'message': "Availability deleted successfully",
-    })
-
+    csrf_token = request.form['csrf_token']
+    if csrf_token == session['csrf_token']:
+        deleted_avail_id = request.form['deleted-availid']
+        deleted_avail = Availability.query.filter_by(id=deleted_avail_id).first()
+        if deleted_avail:
+            db.session.delete(deleted_avail)
+            db.session.commit()
+        return jsonify ({
+            'success': True,
+            'message': "Availability deleted successfully",
+        })
+    else:
+        return jsonify({
+            'error': True,
+            'message': "Issue with verifying CSRF Token"
+        })
 @app.route('/send_avail', methods=['POST', 'GET'])
 def send_avail():
     if firewall.rate_limiter() == 429:
@@ -1688,23 +1806,31 @@ def reset_password_verify():
             'status':429,
             'message': "Too Many Requests",
         })
-    returning_email = firewall.santitize_input(request.form['reset-password-email'])
-    html_content = render_template('reset_password_verify.html')
-    subject = "Reset Your Password"
-    returning_user = User.query.filter_by(email=returning_email).first()
-    session['reset_email'] = returning_user.email
-    if returning_user:
-        send_confirmation_email(html_content, returning_user.email, subject )
-        return jsonify({
-            'success': True,
-            'message': 'You will receive an email shortly to continue the process.',
-        })
+    csrf_token = request.form['csrf_token']
+    if csrf_token == session['csrf_token']:
+        returning_email = firewall.santitize_input(request.form['reset-password-email'])
+        html_content = render_template('reset_password_verify.html')
+        subject = "Reset Your Password"
+        returning_user = User.query.filter_by(email=returning_email).first()
+        session['reset_email'] = returning_user.email
+        if returning_user:
+            send_confirmation_email(html_content, returning_user.email, subject )
+            return jsonify({
+                'success': True,
+                'message': 'You will receive an email shortly to continue the process.',
+            })
 
+        else:
+            return jsonify({
+                'success': False,
+                'message': "You will receive an email shortly to continue the process.",
+
+    
+            })
     else:
         return jsonify({
-            'success': False,
-            'message': "You will receive an email shortly to continue the process.",
-
+            'error': True,
+            'message': "Issue with verifying CSRF Token"
         })
     
 @app.route('/reset_password', methods=['POST', 'GET'])
@@ -1714,42 +1840,55 @@ def reset_password():
             'status':429,
             'message': "Too Many Requests",
         })
-    new_password = firewall.santitize_input(request.form['new-reset-password'])
-    if firewall.identify_payloads(new_password) == 403:
-            return jsonify({
-                'status':403,
-                'offense': "Payloads",
-                'message': "Malicious payloads detected",
-        })
-    new_password_confirm = firewall.santitize_input(request.form['confirm-new-password'])
-    if firewall.identify_payloads(new_password_confirm) == 403:
-            return jsonify({
-                'status':403,
-                'offense': "Payloads",
-                'message': "Malicious payloads detected",
-        })
-
-    if new_password == new_password_confirm:
-        changed_password = ph.hash(new_password)
-        user = User.query.filter_by(email = session['reset_email']).first()
-        if user:
-            user.hashed_password = changed_password
-            db.session.commit()
-            return jsonify ({
-                'success': True,
-                'message': "Your Password Has Been Reset Successfully."
-
+    csrf_token = request.form['csrf_token']
+    if csrf_token == session['csrf_token']:
+        new_password = firewall.santitize_input(request.form['new-reset-password'])
+        if firewall.identify_payloads(new_password) == 403:
+                return jsonify({
+                    'status':403,
+                    'offense': "Payloads",
+                    'message': "Malicious payloads detected",
             })
-        else:
+        new_password_confirm = firewall.santitize_input(request.form['confirm-new-password'])
+        if firewall.identify_payloads(new_password_confirm) == 403:
+                return jsonify({
+                    'status':403,
+                    'offense': "Payloads",
+                    'message': "Malicious payloads detected",
+            })
+
+        if new_password == new_password_confirm:
+            changed_password = ph.hash(new_password)
+            user = User.query.filter_by(email = session['reset_email']).first()
+            if user:
+                user.hashed_password = changed_password
+                db.session.commit()
+                return jsonify ({
+                    'success': True,
+                    'message': "Your Password Has Been Reset Successfully."
+
+                })
+            else:
+                return jsonify({
+                    'success': False,
+                    'message': "Something Went Wrong",
+                })
+        else: 
             return jsonify({
                 'success': False,
-                'message': "Something Went Wrong",
+                'message': "Passwords Do Not Match. Try Again."
             })
-    else: 
+    else:
         return jsonify({
-            'success': False,
-            'message': "Passwords Do Not Match. Try Again."
+            'error': True,
+            'message': "Issue with verifying CSRF Token"
         })
+@app.route('/get_user_csrf')
+def get_user_csrf():
+    return jsonify({
+        'success':True,
+        'session_csrf': session['csrf_token']
+    })
 
     
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BlueLogo from './BlueLogo.jsx'
-import CsrfToken from './CsrfToken.jsx';
+
 
 function Login() {
 
@@ -69,7 +69,7 @@ function Login() {
 
     return(
             <>
-            <CsrfToken token = {csrfToken}/>
+            
             
                 <BlueLogo/>
             <div className="login-form">

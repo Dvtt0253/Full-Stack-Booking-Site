@@ -1,8 +1,10 @@
 import { useNavigate } from "react-router-dom"
+import { useCsrfToken } from "./CsrfTokenContext";
 
 function ConfirmAccountDelete (){
 
     const navigate = useNavigate();
+    const csrf_token = useCsrfToken();
 
 
     const fetchDelete = async(formData) => {
@@ -50,6 +52,7 @@ function ConfirmAccountDelete (){
                 <input type="email" id="delete-email" name="delete-email" required/>
                 <label for="delete-password">Password</label>
                 <input type="password" id="delete-password" name="delete-password"required/>
+                <input type="hidden" id="csrf_token" name="csrf_token" value={csrf_token.csrfToken}/>
                 <p>By submitting this form, you are agreeing to delete your account.</p>
                 <p>Please note, this action is irreversible and all appointment and account data will be inaccessbile and lost.</p>
                 <button type="submit">Delete Your Account</button>

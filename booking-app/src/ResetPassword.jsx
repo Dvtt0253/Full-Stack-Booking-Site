@@ -1,9 +1,11 @@
 import NewLogo from './NewLogo.jsx';
 import { useNavigate} from 'react-router-dom';
+import { useCsrfToken } from './CsrfTokenContext.jsx';
 
 function ResetPassword (){
 
     const navigate = useNavigate();
+    const csrf_token = useCsrfToken();
 
     const fetchPasswordReset =  async(formData) => {
         try{
@@ -53,6 +55,7 @@ function ResetPassword (){
                 <p>If your email is connected to an existing account, you will receive an email shortly to reset you password.</p>
                 <label for="reset-password-email">Email: </label>
                 <input type="email" id="reset-password-email" name="reset-password-email" required/>
+                <input type="hidden" id="csrf_token" name="csrf_token" value={csrf_token.csrfToken}/>
                 <button type="submit">Submit</button>
 
             </form>

@@ -17,6 +17,7 @@ import ResetPasswordLink from './ResetPasswordLink.jsx';
 import RateLimitResponse from './RateLimitResponse.jsx';
 import LoginRateResponse from './LoginRateResponse.jsx';
 import Payloads from './Payloads.jsx';
+import { CsrfTokenProvider } from './CsrfTokenContext.jsx';
 
 
 
@@ -85,6 +86,10 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <RouterProvider router={router}/>
+    <CsrfTokenProvider>
+      <RouterProvider router={router}/>
+
+    </CsrfTokenProvider>
+    
   </React.StrictMode>,
 )
