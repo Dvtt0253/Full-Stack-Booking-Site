@@ -137,8 +137,7 @@ class Token(db.Model):
 with app.app_context():
     db.create_all()
 
-#admin_password = ph.hash("Admin123?")
-#print(admin_password)
+
 print(datetime.now())
 
 def create_token(length):
