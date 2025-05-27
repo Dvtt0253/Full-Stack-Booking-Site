@@ -4,11 +4,13 @@ function RateLimitResponse(){
 
     return(
       <>
+        <div className="rate-limit-div">
+          <NewLogo/>
+          <h1>429</h1>
+          <p>Too Many Requests. Try Again Later.</p>
 
-
-        <NewLogo/>
-        <h1>429</h1>
-        <p>Too Many Requests. Try Again Later.</p>
+        </div>
+        
       </>
 
 

@@ -1,6 +1,9 @@
 import {useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCsrfToken } from './CsrfTokenContext';
+import MobileNav from './MobileNav.jsx';
+import NewLogo from './NewLogo.jsx';
+import NavLogo from './NavLogo.jsx';
 
 function BookingPage(){
     const [zippedCancelled, setZippedCan] = useState([]);
@@ -116,8 +119,15 @@ function BookingPage(){
 
     return(
     <>
+     <div className="mobile-nav-logo">
+            <NewLogo/>
+
+        </div>
+    <MobileNav/>
+
 
          <div className="user-nav-div">
+            <NavLogo/>
             <div className="user-nav-buttons">
                 <button onClick={() => navigate('/homepage')}>Home</button>
                 <button onClick={() => navigate('/booking_page')}>Appointments</button>

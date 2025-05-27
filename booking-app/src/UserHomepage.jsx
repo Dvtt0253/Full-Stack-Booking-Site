@@ -2,6 +2,8 @@ import {useEffect, useState} from 'react';
 import { useNavigate} from 'react-router-dom';
 import NavLogo from './NavLogo.jsx';
 import { useCsrfToken } from './CsrfTokenContext.jsx';
+import MobileNav from './MobileNav.jsx';
+import NewLogo from './NewLogo.jsx';
 
 
 
@@ -141,11 +143,24 @@ function UserHomepage(){
         const formData = new FormData(event.target);
         fetchBookingSubmit(formData);
     }
+    function reloadHomepage(){
+        location.reload()
+    }
+    
 
 
 
     return(
         <>
+        <div className="mobile-nav-logo">
+        <a href="#" onClick={reloadHomepage}>
+            <NewLogo/>
+
+        </a>
+            
+
+        </div>
+        <MobileNav/>
         <div className="user-nav-div">
 
             <NavLogo/>
@@ -155,7 +170,7 @@ function UserHomepage(){
             <div className="user-nav-buttons">
                 <button onClick={() => navigate('/homepage')}>Home</button>
              <button onClick={() => navigate('/booking_page')}>Appointments</button>
-              <button onClick={() => navigate('/manage_account')}>Account Management</button>
+              <button onClick={() => navigate('/manage_account')}>Account</button>
 
             </div>
             

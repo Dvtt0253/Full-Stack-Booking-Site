@@ -3,6 +3,7 @@ import {useNavigate} from 'react-router-dom';
 import DeleteAccount from './DeleteAccount.jsx';
 import NewLogo from './NewLogo.jsx';
 import { useCsrfToken } from './CsrfTokenContext.jsx';
+import MobileNav from './MobileNav.jsx';
 
 function UserAccountManage({showDelete = true, is_user = true, homepage_path='/homepage'}){
     const [firstName, setFirstName] = useState();
@@ -139,6 +140,7 @@ function UserAccountManage({showDelete = true, is_user = true, homepage_path='/h
 
     return(
         <>
+        <MobileNav/>
 
         <a href="#" onClick={() => navigate(homepage_path)} >
             <NewLogo size = {70}/>

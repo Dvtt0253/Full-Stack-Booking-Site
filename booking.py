@@ -692,7 +692,7 @@ def cancel_booking():
             'status':429,
             'message': "Too Many Requests",
         })
-    crsf_token = request.form['csrf_token']
+    csrf_token = request.form['csrf_token']
     if csrf_token == session['csrf_token']:
 
         cancelled_booking = request.form['cancelled-appoint-id']
