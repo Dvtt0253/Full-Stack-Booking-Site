@@ -98,7 +98,7 @@ function UserHomepage(){
 
             }
             else{
-                alert("Request not successful");
+                console.log(error);
                 location.reload();
             }
 
