@@ -423,11 +423,11 @@ def homepage():
 def submit_doctor():
     chosen_doctorid = firewall.santitize_input(request.form['chosen-doctor'])
     print(f"The chosen doctor is: {chosen_doctorid}")
-    doctor_dates = Availability.query.filter_by(doctor_id=chosen_doctorid).all()
+    doctor_dates = Availability.query.filter_by(doctor_id=chosen_doctorid, is_booked=0).all()
     avail_dates = []
     for date in doctor_dates:
-        if date.is_booked == 0:
-            avail_dates.append(f"{date.day} at {date.time}") 
+       
+        avail_dates.append(f"{date.day} at {date.time}") 
 
     
 
@@ -513,11 +513,11 @@ def submit_booking():
 
 
         
-    # for date in booked_doctordates:
+        for date in booked_doctordates:
 
-            #if parsed_time[0] == date.day and parsed_time[2] == date.time:
-                #date.is_booked = 0
-                #db.session.commit()
+            if parsed_time[0] == date.day and parsed_time[2] == date.time:
+                date.is_booked = True
+      
         
 
 
@@ -696,6 +696,14 @@ def cancel_booking():
 
         cancelled_booking = request.form['cancelled-appoint-id']
         cancel_booking = Booking.query.filter_by(id=cancelled_booking).first()
+        cancelled_doctor = cancel_booking.booked_doctorid
+        cancelled_date = cancel_booking.scheduled_time
+        split_date = cancelled_date.split()
+        doctor_dates = Availability.query.filter_by(doctor_id=cancelled_doctor).all()
+        for date in doctor_dates:
+            if split_date[0] == date.day and split_date[2] == date.time:
+                date.is_booked = 0
+                db.session.commit()
         scheduled_time = cancel_booking.scheduled_time
         parsed_time = scheduled_time.split()
 
@@ -1534,6 +1542,17 @@ def admin_delete_appointment():
                     'message': "Malicious payloads detected",
             })
         deleted_booking = Booking.query.filter_by(id=deleted_appoint_id).first()
+        deleted_time = deleted_booking.scheduled_time
+        split_time = deleted_time.split()
+        cancelled_doctor = deleted_booking.booked_doctorid
+        if cancelled_doctor:
+            doctor_dates = Availability.query.filter_by(doctor_id=cancelled_doctor).all()
+            for date in doctor_dates:
+                if split_time[0] == date.day and split_time[2] == date.time:
+                    date.is_booked = 0
+                    db.session.commit()
+        
+
         if deleted_booking:
             deleted_booking.is_cancelled = 1
             db.session.commit()
@@ -1782,7 +1801,7 @@ def send_avail():
                 'offense': "Payloads",
                 'message': "Malicious payloads detected",
         })
-    doctors_avail_query = Availability.query.filter_by(doctor_id = chosen_doctor_id).all()
+    doctors_avail_query = Availability.query.filter_by(doctor_id = chosen_doctor_id, is_booked=0).all()
     doctors_avail = []
     for avail in doctors_avail_query:
         doctors_avail.append({
