@@ -17,7 +17,9 @@ import ResetPasswordLink from './ResetPasswordLink.jsx';
 import RateLimitResponse from './RateLimitResponse.jsx';
 import LoginRateResponse from './LoginRateResponse.jsx';
 import Payloads from './Payloads.jsx';
+import LoadingPage from './LoadingPage.jsx';
 import { CsrfTokenProvider } from './CsrfTokenContext.jsx';
+import InitialLoading from './InitialLoading.jsx';
 
 
 
@@ -80,6 +82,14 @@ const router = createBrowserRouter([
     path: '/403_Payloads',
     element: <Payloads/>
   }, 
+  {
+    path: '/please_wait',
+    element: <LoadingPage/>
+  },
+  {
+    path: '/confirm_loading', 
+    element: <InitialLoading/>
+  }
   
 
 ]);

@@ -72,6 +72,10 @@ function AdminHomepage(){
             const response = await fetch('http://127.0.0.1:5011/admin_add_user', {
                 method : 'POST',
                 body: formData,
+                headers: {
+                    'X-CSRFToken': csrf_token.csrfToken,
+
+                },
                 credentials: 'include'
 
 
@@ -107,6 +111,10 @@ function AdminHomepage(){
             const response = await fetch('http://127.0.0.1:5011/admin_add_doctor', {
                 method : 'POST',
                 body: formData,
+                headers: {
+                    'X-CSRFToken': csrf_token.csrfToken,
+
+                },
                 credentials: 'include',
             });
             const data = await response.json();
@@ -138,6 +146,10 @@ function AdminHomepage(){
             const response = await fetch('http://127.0.0.1:5011/admin_add_appointment', {
                 method: 'POST',
                 body: formData,
+                headers: {
+                    'X-CSRFToken': csrf_token.csrfToken,
+
+                },
                 credentials: 'include',
             });
             const data = await response.json();
@@ -167,6 +179,10 @@ function AdminHomepage(){
             const response = await fetch('http://127.0.0.1:5011/admin_add_avail', {
                 method: 'POST',
                 body: formData,
+                headers: {
+                    'X-CSRFToken': csrf_token.csrfToken,
+
+                },
                 credentials : 'include',
             });
             const data = await response.json();
@@ -197,6 +213,10 @@ function AdminHomepage(){
             const response = await fetch('http://127.0.0.1:5011/admin_users', {
                 method : "POST", 
                 body: formData,
+                headers: {
+                    'X-CSRFToken': csrf_token.csrfToken,
+
+                },
                 credentials: 'include',
 
             });
@@ -227,6 +247,10 @@ function AdminHomepage(){
             const response = await fetch('http://127.0.0.1:5011/admin_doctors', {
                 method: 'POST',
                 body: formData,
+                headers: {
+                    'X-CSRFToken': csrf_token.csrfToken,
+
+                },
                 credentials: 'include',
             });
             const data = await response.json();
@@ -256,6 +280,10 @@ function AdminHomepage(){
             const response = await fetch('http://127.0.0.1:5011/admin_appointments', {
                 method: "POST",
                 body: formData,
+                headers: {
+                    'X-CSRFToken': csrf_token.csrfToken,
+
+                },
                 credentials: 'include',
             });
             const data = await response.json();
@@ -284,6 +312,10 @@ function AdminHomepage(){
             const response = await fetch('http://127.0.0.1:5011/admin_avail', {
                 method: 'POST', 
                 body: formData,
+                headers: {
+                    'X-CSRFToken': csrf_token.csrfToken,
+
+                },
                 credentials: 'include',
             });
             const data = await response.json();
@@ -312,6 +344,10 @@ function AdminHomepage(){
             const response = await fetch('http://127.0.0.1:5011/admin_delete_user', {
                 method: 'POST',
                 body: formData,
+                headers: {
+                    'X-CSRFToken': csrf_token.csrfToken,
+
+                },
                 credentials: 'include',
             });
 
@@ -341,6 +377,10 @@ function AdminHomepage(){
             const response = await fetch("http://127.0.0.1:5011/admin_delete_doctor", {
                 method : 'POST',
                 body: formData,
+                headers: {
+                    'X-CSRFToken': csrf_token.csrfToken,
+
+                },
                 credentials: 'include',
             });
             const data = await response.json()
@@ -370,6 +410,10 @@ function AdminHomepage(){
             const response = await fetch("http://127.0.0.1:5011/admin_delete_appointment", {
                 method : 'POST',
                 body: formData,
+                headers: {
+                    'X-CSRFToken': csrf_token.csrfToken,
+
+                },
                 credentials: 'include',
             });
             const data = await response.json()
@@ -390,8 +434,10 @@ function AdminHomepage(){
                 location.reload();
             }
         }catch(error){
-            console.log("Fetch could not be completed");
-            alert("Fetch could not be completed");
+            if (process.env.NODE_ENV === 'development') {
+                    console.log("Fetch could not be completed");
+                    }
+         
         }
     }
     const fetchAvailDelete= async(formData) => {
@@ -399,6 +445,10 @@ function AdminHomepage(){
             const response = await fetch("http://127.0.0.1:5011/admin_delete_avail", {
                 method : 'POST',
                 body: formData,
+                headers: {
+                    'X-CSRFToken': csrf_token.csrfToken,
+
+                },
                 credentials: 'include',
             });
             const data = await response.json()

@@ -49,7 +49,7 @@ function CreateAccount(){
             }
         }catch(error){
             console.error("Error", error);
-            alert("Response not found");
+            navigate('/confirm_loading');
 
         }
 

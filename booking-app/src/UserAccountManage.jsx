@@ -55,6 +55,10 @@ function UserAccountManage({showDelete = true, is_user = true, homepage_path='/h
             const response = await fetch('http://127.0.0.1:5011/change_email', {
                 method: 'POST',
                 body: formData,
+                headers: {
+                    'X-CSRFToken': csrf_token.csrfToken,
+
+                },
                 credentials: 'include',
             });
             const data = await response.json();
@@ -83,7 +87,11 @@ function UserAccountManage({showDelete = true, is_user = true, homepage_path='/h
         try{
             const response = await fetch('http://127.0.0.1:5011/change_password', {
                 method: 'POST', 
-                body: formData, 
+                body: formData,
+                headers: {
+                    'X-CSRFToken': csrf_token.csrfToken,
+
+                }, 
                 credentials: 'include',
             });
             const data = await response.json();

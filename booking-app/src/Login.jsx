@@ -6,7 +6,8 @@ import BlueLogo from './BlueLogo.jsx'
 function Login() {
 
     const navigate = useNavigate();
-    const [csrfToken, setCsrfToken] = useState();
+
+  
 
 
     const handleLogin = async (formData) => {
@@ -27,31 +28,38 @@ function Login() {
             console.log(data);
             if(data.status === 403 && data.offense === "Login Attempts"){
                 navigate('/403_Response');
+                
 
             }
-            else if(data.status === 403 && data.ofense === "Payloads"){
+            else if(data.status === 403 && data.offense === "Payloads"){
                 navigate('403_Payloads');
+               
 
             }
             else if(data.success && data.Role === "User"){
 
-                navigate('/homepage');
-                setCsrfToken(data.session_csrf);
+                navigate('/please_wait');
+               
+             
 
             }
             else if(data.success && data.Role === "Admin"){
                 navigate('/admin_homepage')
-                setCsrfToken(data.session_csrf);
+                
+               
                 
             }
             else{
 
                 navigate('/login_page');
                 alert(data.message);
+                setIsLoggedIn(false);
             }
         }catch(error){
-            console.log("Response Not found", error);
-            alert("Response Not Found");
+            console.log( error);
+            alert("Please wait and try again shortly.");
+            navigate('/confirm_loading');
+            
         }
 
 
@@ -66,6 +74,7 @@ function Login() {
         handleLogin(formData);
 
     }
+    
 
     return(
             <>

@@ -12,6 +12,10 @@ function ResetPassword (){
             const response = await fetch('http://127.0.0.1:5011/reset_password_verify', {
                 method : 'POST',
                 body: formData,
+                headers: {
+                    'X-CSRFToken': csrf_token.csrfToken,
+
+                },
                 credentials: 'include'
             });
             const data = await response.json();
@@ -55,7 +59,7 @@ function ResetPassword (){
                 <p>If your email is connected to an existing account, you will receive an email shortly to reset you password.</p>
                 <label for="reset-password-email">Email: </label>
                 <input type="email" id="reset-password-email" name="reset-password-email" required/>
-                <input type="hidden" id="csrf_token" name="csrf_token" value={csrf_token.csrfToken}/>
+
                 <button type="submit">Submit</button>
 
             </form>

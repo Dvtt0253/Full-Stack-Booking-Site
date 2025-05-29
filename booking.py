@@ -344,7 +344,7 @@ def login_auth():
                 'Role': returning_user.role,
                 'success': True,
                 'message': "User Login Successful",
-                'session_csrf': session['csrf_token'],
+                
                    
 
 
@@ -1824,32 +1824,32 @@ def reset_password_verify():
             'status':429,
             'message': "Too Many Requests",
         })
-    csrf_token = request.form['csrf_token']
-    if csrf_token == session['csrf_token']:
-        returning_email = firewall.santitize_input(request.form['reset-password-email'])
-        html_content = render_template('reset_password_verify.html')
-        subject = "Reset Your Password"
-        returning_user = User.query.filter_by(email=returning_email).first()
-        session['reset_email'] = returning_user.email
-        if returning_user:
-            send_confirmation_email(html_content, returning_user.email, subject )
-            return jsonify({
-                'success': True,
-                'message': 'You will receive an email shortly to continue the process.',
-            })
-
-        else:
-            return jsonify({
-                'success': False,
-                'message': "You will receive an email shortly to continue the process.",
-
     
-            })
+    returning_email = firewall.santitize_input(request.form['reset-password-email'])
+    html_content = render_template('reset_password_verify.html')
+    subject = "Reset Your Password"
+    returning_user = User.query.filter_by(email=returning_email).first()
+    if not returning_user:
+        return jsonify({
+            'success': False,
+            'message': "You will receive an email shortly to continue the process."
+        })
+    session['reset_email'] = returning_user.email
+    if returning_user:
+        send_confirmation_email(html_content, returning_user.email, subject )
+        return jsonify({
+            'success': True,
+            'message': 'You will receive an email shortly to continue the process.',
+        })
+
     else:
         return jsonify({
-            'error': True,
-            'message': "Issue with verifying CSRF Token"
-        })
+            'success': False,
+            'message': "You will receive an email shortly to continue the process.",
+
+    
+         })
+   
     
 @app.route('/reset_password', methods=['POST', 'GET'])
 def reset_password():
@@ -1858,55 +1858,73 @@ def reset_password():
             'status':429,
             'message': "Too Many Requests",
         })
-    csrf_token = request.form['csrf_token']
-    if csrf_token == session['csrf_token']:
-        new_password = firewall.santitize_input(request.form['new-reset-password'])
-        if firewall.identify_payloads(new_password) == 403:
-                return jsonify({
-                    'status':403,
-                    'offense': "Payloads",
-                    'message': "Malicious payloads detected",
+    
+    new_password = firewall.santitize_input(request.form['new-reset-password'])
+    if firewall.identify_payloads(new_password) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
             })
-        new_password_confirm = firewall.santitize_input(request.form['confirm-new-password'])
-        if firewall.identify_payloads(new_password_confirm) == 403:
-                return jsonify({
-                    'status':403,
-                    'offense': "Payloads",
-                    'message': "Malicious payloads detected",
+    new_password_confirm = firewall.santitize_input(request.form['confirm-new-password'])
+    if firewall.identify_payloads(new_password_confirm) == 403:
+            return jsonify({
+                'status':403,
+                'offense': "Payloads",
+                'message': "Malicious payloads detected",
+        })
+
+    if new_password == new_password_confirm:
+        changed_password = ph.hash(new_password)
+        user = User.query.filter_by(email = session['reset_email']).first()
+        if user:
+            user.hashed_password = changed_password
+            db.session.commit()
+            return jsonify ({
+                'success': True,
+                'message': "Your Password Has Been Reset Successfully."
+
             })
-
-        if new_password == new_password_confirm:
-            changed_password = ph.hash(new_password)
-            user = User.query.filter_by(email = session['reset_email']).first()
-            if user:
-                user.hashed_password = changed_password
-                db.session.commit()
-                return jsonify ({
-                    'success': True,
-                    'message': "Your Password Has Been Reset Successfully."
-
-                })
-            else:
-                return jsonify({
-                    'success': False,
-                    'message': "Something Went Wrong",
-                })
-        else: 
+        else:
             return jsonify({
                 'success': False,
-                'message': "Passwords Do Not Match. Try Again."
+                'message': "Something Went Wrong",
             })
-    else:
+    else: 
         return jsonify({
-            'error': True,
-            'message': "Issue with verifying CSRF Token"
+            'success': False,
+            'message': "Passwords Do Not Match. Try Again."
         })
+    
 @app.route('/get_user_csrf')
 def get_user_csrf():
     return jsonify({
         'success':True,
         'session_csrf': session['csrf_token']
     })
+
+@app.route('/check_connection')
+def check_connection():
+    return jsonify({
+        'status': 200
+    })
+@app.route('/check_post_request', methods=['POST', 'GET'])
+def check_post_requests():
+    csrf_token = request.headers['X-CSRFToken']
+    print(f"header-token: {csrf_token}")
+    print(f"session token: {session['csrf_token']}")
+    if csrf_token:
+        if session['csrf_token'] == csrf_token:
+            return jsonify ({
+                'status': 200
+            })
+        return jsonify({
+            'message': "tokens dont match"
+        })
+    return jsonify({
+        'message': "csrf not found"
+    })
+
 
     
 

@@ -15,6 +15,10 @@ function ResetPasswordLink(){
             const response = await fetch('http://127.0.0.1:5011/reset_password', {
                 method: 'POST',
                 body: formData,
+                headers: {
+                    'X-CSRFToken': csrf_token.csrfToken,
+
+                },
                 credentials: 'include',
             });
             const data = await response.json();
@@ -62,7 +66,7 @@ function ResetPasswordLink(){
             <input type="password" id="new-reset-password" name="new-reset-password" required/>
             <label for="confirm-new-password">Confirm New Password: </label>
             <input type="password" id="confirm-new-password" name="confirm-new-password" required/>
-            <input type="hidden" id="csrf_token" name="csrf_token" value={csrf_token.csrfToken}/>
+         
 
             <button type="submit">Reset Password</button>
 

@@ -32,12 +32,18 @@ function BookingPage(){
                     setZippedActive(data.zip_active);
                  }
                  else{
-                    console.log("Response not found");
-                    alert("response not found");
+                   if (process.env.NODE_ENV === 'development') {
+                    console.log("Fetch could not be completed");
+                    }
+                    alert("Please wait. An error occured");
+                    navigate('/please_wait');
                  }
             }catch(error){
-                console.log("Fetch could not be completed");
-                alert("Fetch could not be completed");
+               if (process.env.NODE_ENV === 'development') {
+                    console.log("Fetch could not be completed");
+                    }
+               alert("Please wait. An error occured");
+                navigate('/please_wait');
             }
            
         }

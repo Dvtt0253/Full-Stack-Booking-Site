@@ -15,8 +15,11 @@ function UserHomepage(){
     const [alldoctors, setDoctors] = useState([]);
     const [doctorsAvail, setDoctorsAvail] = useState([]);
     const csrf_token = useCsrfToken();
+   
 
     useEffect(()=>{
+
+        
        
 
         const fetchData = async () =>{
@@ -24,6 +27,10 @@ function UserHomepage(){
             try{
                 const response = await fetch("http://127.0.0.1:5011/homepage", {
                     credentials: 'include',
+                    headers: {
+                    'X-CSRFToken': csrf_token.csrfToken,
+
+                },
                 });
                 const data = await response.json();
                 if(data.success){
@@ -34,6 +41,7 @@ function UserHomepage(){
                     console.log(`lastName:${lastName}`);
                     setDoctors(data.doctors);
                     console.log(`alldoctors: ${alldoctors}`);
+                    
                
 
                 }
@@ -53,6 +61,7 @@ function UserHomepage(){
         
 
         fetchData()
+        
 
     }, [])
 
@@ -79,6 +88,13 @@ function UserHomepage(){
         try{
             const response = await fetch ('http://127.0.0.1:5011/submit_booking', {
                 method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrf_token.csrfToken,
+
+                },
+                
+                
+  
                 body: formData,
                 credentials: 'include',
 
@@ -98,13 +114,17 @@ function UserHomepage(){
 
             }
             else{
-                console.log(error);
-                location.reload();
+
+              if (process.env.NODE_ENV === 'development') {
+                    console.log("Response error");
+                    }
             }
 
         }catch(error){
-            console.log("Fetch could not be completed");
-            alert("Fetch could not be completed");
+           if (process.env.NODE_ENV === 'development') {
+                    console.log("Fetch could not be completed");
+                    }
+           
         }
     }
 
@@ -152,6 +172,7 @@ function UserHomepage(){
 
     return(
         <>
+        
         <div className="mobile-nav-logo">
         <a href="#" onClick={reloadHomepage}>
             <NewLogo/>
@@ -168,7 +189,7 @@ function UserHomepage(){
             
 
             <div className="user-nav-buttons">
-                <button onClick={() => navigate('/homepage')}>Home</button>
+                <button onClick={() => location.reload()}>Home</button>
              <button onClick={() => navigate('/booking_page')}>Appointments</button>
               <button onClick={() => navigate('/manage_account')}>Account</button>
 

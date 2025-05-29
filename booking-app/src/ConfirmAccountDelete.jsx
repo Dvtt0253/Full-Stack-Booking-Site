@@ -33,7 +33,9 @@ function ConfirmAccountDelete (){
 
             }
         }catch(error){
-            console.log("Fetch could not be completed");
+            
+            alert("Please wait and try again. An error occured");
+            navigate('/please_wait');
         }
     }
 
