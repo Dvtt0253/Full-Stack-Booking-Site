@@ -1755,7 +1755,7 @@ def verify_email():
             verified_user.is_verified = 1
             db.session.commit()
             
-            return redirect('https://full-stack-booking-site-frontend.onrender.com/login_page')
+            return redirect('https://full-stack-booking-site-frontend.onrender.com/login_page#')
                 
 
 
