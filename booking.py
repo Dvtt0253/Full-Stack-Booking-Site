@@ -48,7 +48,7 @@ Session(app)
 
 
 app.secret_key = os.getenv('SECRET_KEY')
-CORS(app,origins=["http://localhost:5173"], supports_credentials=True)
+CORS(app,origins=["https://full-stack-booking-site-frontend.onrender.com"], supports_credentials=True)
 
 ph = PasswordHasher()
 
