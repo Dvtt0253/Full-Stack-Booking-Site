@@ -1,4 +1,10 @@
 
 .env
-/instance
+/instance/booking.sql
+/instance/bookings.db
+/instance/doctors.sql
+/instance/users.db
+/instance/users.sql
+firewall_log.log
+
 
