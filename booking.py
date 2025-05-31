@@ -39,7 +39,7 @@ firewall = flask_firewall.Firewall(60, 60)
 
 
 app.config['SESSION_TYPE'] = 'redis'
-app.config['SESSION_REDIS'] = redis.from_url(os.getenv('REDIS_URL', ssl=True)) 
+app.config['SESSION_REDIS'] = redis.from_url(os.getenv('REDIS_URL'), ssl=True) 
 
 
 
