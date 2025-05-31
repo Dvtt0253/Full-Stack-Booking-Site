@@ -37,6 +37,15 @@ firewall = flask_firewall.Firewall(60, 60)
 
 
 
+app.config['SESSION_TYPE'] = 'redis'
+app.config['SESSION_REDIS'] = redis.from_url(os.getenv('REDIS_URL')) 
+
+
+
+
+
+app.config['SESSION_PERMANENT'] = False  
+app.config['SESSION_USE_SIGNER'] = True
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['SESSION_COOKIE_SAMESITE'] = 'None'  
 app.config['SESSION_COOKIE_SECURE'] = True 
