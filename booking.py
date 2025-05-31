@@ -324,13 +324,13 @@ def login_auth():
                     'success': False,
                     'message': 'Incorrect Credentials',
                 })
-            #session['id'] = returning_user.id
-            #session['first_name'] = returning_user.first_name
-            #session['last_name'] = returning_user.last_name
-            #session['email'] = returning_user.email
-            #session['role'] = returning_user.role
-            #session['is_deleted'] = returning_user.is_deleted
-            #session['csrf_token'] = firewall.generate_CSRF_Token(32)
+            session['id'] = returning_user.id
+            session['first_name'] = returning_user.first_name
+            session['last_name'] = returning_user.last_name
+            session['email'] = returning_user.email
+            session['role'] = returning_user.role
+            session['is_deleted'] = returning_user.is_deleted
+            session['csrf_token'] = firewall.generate_CSRF_Token(32)
             
 
             
