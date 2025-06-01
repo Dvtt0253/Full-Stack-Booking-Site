@@ -958,18 +958,7 @@ def confirm_delete():
 
 
 
-@app.route('/add_admin')
-def add_admin():
-    first_name = "Admin"
-    last_name = "Account"
-    email = "Adminaccount56@gmail.com".lower()
-    password = ph.hash("Admin123?")
-    role = "Admin"
-    join_date = datetime.now()
-    is_verified = 1
-    new_user = User(first_name=first_name, last_name=last_name, email=email, hashed_password=password, role=role, is_verified=is_verified, join_date=join_date )
-    db.session.add(new_user)
-    db.session.commit()
+
 
 
 @app.route('/admin_homepage')
